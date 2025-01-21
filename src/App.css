@@ -1,0 +1,154 @@
+/* General reset and styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #eef2f3, #8fa3b6);
+  color: #2c3e50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Form container styling */
+#input-form {
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 100%;
+  padding: 40px;
+  margin: auto;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#input-form:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Header styling */
+h2 {
+  color: #2c3e50;
+  font-size: 26px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Form elements */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Add consistent spacing between form elements */
+}
+
+label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #34495e;
+  margin-bottom: 5px;
+}
+
+input,
+select,
+textarea {
+  padding: 12px 15px;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+  width: 100%; /* Ensure all fields take full width */
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #6c8cbf;
+  background-color: #ffffff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(108, 140, 191, 0.3);
+}
+
+textarea {
+  resize: none;
+  min-height: 100px;
+}
+
+/* Inline input group for aligned fields */
+.inline-group {
+  display: flex;
+  gap: 15px;
+}
+
+.inline-group > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Button styling */
+button {
+  background-color: #6c8cbf;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #5a7dad;
+}
+
+button:active {
+  background-color: #506f9b;
+  transform: scale(0.98);
+}
+
+button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  #input-form {
+    padding: 30px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .inline-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  #input-form {
+    width: 100%;
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+}
