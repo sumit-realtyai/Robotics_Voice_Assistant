@@ -21,7 +21,7 @@ const VoiceWidget = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const porcupineKeyword = {
-    publicPath: "assets/Hey-Buddy_en_wasm_v3_0_0.ppn",
+    publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
     label: "Hey Buddy",
   };
 
