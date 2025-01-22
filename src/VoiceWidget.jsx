@@ -22,7 +22,7 @@ const VoiceWidget = () => {
 
   const porcupineKeyword = {
     publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
-    label: "Hey Buddy",
+    label: "Hi Eva",
   };
 
   const porcupineModel = {
@@ -68,7 +68,7 @@ script.onload = () => {
         provider: "11labs",
         voiceId: "paula",
       },
-      firstMessage: `Hi ${childName || "there"}! I am Vapi! How can I assist you today?`,
+      firstMessage: `Hi ${childName || "there"}! I am Eva! How can I assist you today?`,
     },
     config: {},
   });
