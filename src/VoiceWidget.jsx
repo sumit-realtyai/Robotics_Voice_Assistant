@@ -65,8 +65,8 @@ script.onload = () => {
                       Important instructions from parents: ${additionalInstructions}`,
       },
       voice: {
-        provider: "11labs",
-        voiceId: "paula",
+        provider: "cartesia",
+        voiceId: "2ee87190-8f84-4925-97da-e52547f9462c",
       },
       firstMessage: `Hi ${childName || "there"}! I am Eva! How can I assist you today?`,
     },
