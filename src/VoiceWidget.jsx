@@ -21,7 +21,7 @@ const VoiceWidget = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const porcupineKeyword = {
-    publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
+    publicPath: "assets/Hi-Eva.ppn",
     label: "Hi Eva",
   };
 
@@ -31,7 +31,7 @@ const VoiceWidget = () => {
 
   useEffect(() => {
     if (isFormSubmitted) {
-      init("eGdFvgWbfEjISTLCKKHQza1K4Kf++vp+hHnu3PlC3ZMb+hktuvwO/g==", porcupineKeyword, porcupineModel).then(() => {
+      init("JrszSE+vOtwSWMaswF6roMnOImlxHD7jnLdmWqYsNLT2mKkthvRWUA==", porcupineKeyword, porcupineModel).then(() => {
         start();
       });
     }
