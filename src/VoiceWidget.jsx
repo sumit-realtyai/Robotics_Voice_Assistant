@@ -197,10 +197,8 @@ const VoiceWidget = () => {
 
   const [childName, setChildName] = useState("");
   const [additionalInstructions, setAdditionalInstructions] = useState("");
-  const [vapiInstance, setVapiInstance] = useState(null);
-  const [wakeWordDetected, setWakeWordDetected] = useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [isCallButtonVisible, setIsCallButtonVisible] = useState(false);
+  const [wakeWordDetected, setWakeWordDetected] = useState(false);
 
   const porcupineKeyword = {
     publicPath: "assets/Hi-Eva.ppn",
@@ -221,46 +219,50 @@ const VoiceWidget = () => {
   }, [init, start, release, isFormSubmitted]);
 
   useEffect(() => {
-    if (keywordDetection && isFormSubmitted) {
-      console.log("Wake word detected:", keywordDetection.label);
-      setWakeWordDetected(true);
-      initializeVapi();
-    }
-  }, [keywordDetection, isFormSubmitted]);
+    if (isFormSubmitted) {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+      script.async = true;
+      script.defer = true;
 
-  const initializeVapi = () => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-    script.async = true;
-    script.defer = true;
-
-    script.onload = () => {
-      const instance = window.vapiSDK.run({
-        apiKey: "a5ebab87-088e-4426-8de2-a3ff4a684659",
-        assistant: {
-          model: {
-            provider: "openai",
-            model: "gpt-3.5-turbo",
-            systemPrompt: `You're a versatile AI assistant named Eva who is fun to talk with. 
+      script.onload = () => {
+        window.vapiSDK.run({
+          apiKey: "a5ebab87-088e-4426-8de2-a3ff4a684659",
+          assistant: {
+            model: {
+              provider: "openai",
+              model: "gpt-3.5-turbo",
+              systemPrompt: `You're a versatile AI assistant named Eva who is fun to talk with. 
                             Please detect any toxic word and inappropriate language in your input. On detection, please respond that you can't comply with the request. Also, make sure your responses don't include any toxic or inappropriate words from a child perspective.
 
                             Important instructions from parents: ${additionalInstructions}`,
+            },
+            voice: {
+              provider: "cartesia",
+              voiceId: "2ee87190-8f84-4925-97da-e52547f9462c",
+            },
+            firstMessage: `Hi ${childName || "there"}! I am Eva! How can I assist you today?`,
           },
-          voice: {
-            provider: "cartesia",
-            voiceId: "2ee87190-8f84-4925-97da-e52547f9462c",
-          },
-          firstMessage: `Hi ${childName || "there"}! I am Eva! How can I assist you today?`,
-        },
-        config: {},
-      });
+          config: {},
+        });
+      };
 
-      setVapiInstance(instance);
-      setIsCallButtonVisible(true);
-    };
+      document.body.appendChild(script);
+    }
+  }, [isFormSubmitted, additionalInstructions, childName]);
 
-    document.body.appendChild(script);
-  };
+  useEffect(() => {
+    if (keywordDetection && isFormSubmitted) {
+      console.log("Wake word detected:", keywordDetection.label);
+      setWakeWordDetected(true);
+      
+      // Programmatically click the Vapi support button when wake word is detected
+      const supportButton = document.getElementById('vapi-support-btn');
+      if (supportButton) {
+        supportButton.click();
+      }
+    }
+  }, [keywordDetection, isFormSubmitted]);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -269,13 +271,6 @@ const VoiceWidget = () => {
     setChildName(nameInput.value.trim());
     setAdditionalInstructions(instructionsInput.value.trim());
     setIsFormSubmitted(true);
-  };
-
-  const handleCallButtonClick = () => {
-    const supportButton = document.getElementById('vapi-support-btn');
-    if (supportButton) {
-      supportButton.click();
-    }
   };
 
   if (error) {
@@ -353,15 +348,6 @@ const VoiceWidget = () => {
             <div className="space-y-2 text-lg">
               <p className="text-gray-700">Listening: <span className={`font-semibold ${isListening ? 'text-green-600' : 'text-red-600'}`}>{isListening ? "Active" : "Inactive"}</span></p>
               <p className="text-gray-700">Wake Word Detection: <span className={`font-semibold ${wakeWordDetected ? 'text-green-600' : 'text-yellow-600'}`}>{wakeWordDetected ? "Detected! Vapi is ready." : "Waiting for 'Hi Eva'..."}</span></p>
-              
-              {isCallButtonVisible && (
-                <button 
-                  onClick={handleCallButtonClick}
-                  className="w-full mt-4 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition duration-300"
-                >
-                  Start Call
-                </button>
-              )}
             </div>
           </div>
         )}
