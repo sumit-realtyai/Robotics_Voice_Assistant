@@ -213,7 +213,7 @@ const VoiceWidget = () => {
 
   useEffect(() => {
     if (isFormSubmitted) {
-      init("JrszSE+vOtwSWMaswF6roMnOImlxHD7jnLdmWqYsNLT2mKkthvRWGA==", porcupineKeyword, porcupineModel).then(() => {
+      init("eGdFvgWbfEjISTLCKKHQza1K4Kf++vp+hHnu3PlC3ZMb+hktuvwO/g==", porcupineKeyword, porcupineModel).then(() => {
         start();
       });
     }
