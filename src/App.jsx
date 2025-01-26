@@ -16,7 +16,6 @@ import './App.css';
 
 // Dynamic imports for components
 const VoiceWidget = React.lazy(() => import("./VoiceWidget.jsx"));
-const Sarvam = React.lazy(() => import("./sarvam.jsx"));
 const Synthflow = React.lazy(() => import("./synthflow.jsx"));
 const Voiceflow = React.lazy(() => import("./voiceFlow.jsx"));
 
@@ -40,7 +39,6 @@ function App() {
           onChange={handleChange}
         >
           <option value="VAPI">VAPI</option>
-          <option value="Sarvam">Sarvam</option>
           <option value="Synthflow">Synthflow</option>
           <option value="Voiceflow">Voiceflow</option> {/* Added Voiceflow */}
         </select>
@@ -48,7 +46,6 @@ function App() {
 
       <Suspense fallback={<div>Loading...</div>}>
         {selectedOption === "VAPI" && <VoiceWidget />}
-        {selectedOption === "Sarvam" && <Sarvam />}
         {selectedOption === "Synthflow" && <Synthflow />}
         {selectedOption === "Voiceflow" && <Voiceflow />} {/* Trigger Voiceflow here */}
       </Suspense>
