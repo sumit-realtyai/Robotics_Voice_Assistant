@@ -16,7 +16,7 @@ import './App.css';
 
 // Dynamic imports for components
 const VoiceWidget = React.lazy(() => import("./VoiceWidget.jsx"));
-const Sarvam = React.lazy(() => import("./Sarvam.jsx"));
+const Sarvam = React.lazy(() => import("./sarvam.jsx"));
 const Synthflow = React.lazy(() => import("./synthflow.jsx"));
 const Voiceflow = React.lazy(() => import("./voiceFlow.jsx"));
 
