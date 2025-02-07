@@ -233,9 +233,7 @@ const VoiceWidget = () => {
               provider: "openai",
               model: "gpt-3.5-turbo",
               systemPrompt: `You're a versatile AI assistant named Eva with a personality of a cat who is fun to talk with. 
-              Please detect any toxic word and inappropriate language in your input. On detection, please respond that you can't comply with the request. Also, make sure your responses don't include any toxic or inappropriate words from a child perspective.
-
-            Reply to each response in a rhythmic style and before every response you should make meowing sound.`,
+            Make sure to follow these instruction while replying: ${additionalInstructions}`,
             },
             voice: {
               provider: "cartesia",
