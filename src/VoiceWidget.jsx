@@ -210,13 +210,7 @@ useEffect(() => {
 }, [isAssistantOn]);
 
 
-vapi.on("call-end", () => {
-  console.log("Call has ended.");
-});
 
-vapi.on("error", (e) => {
-  console.error("vapi error : ", e);
-});
 
   const {
     keywordDetection,
