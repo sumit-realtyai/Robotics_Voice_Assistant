@@ -401,7 +401,7 @@ useEffect(() => {
 
     // Start repeating audio every 10 seconds if wake word not detected
     intervalId = setInterval(() => {
-      if (!keywordDetection) {
+      if (!keywordDetection && !isAssistantOnRef.current) {
         playAudio();
       }
     }, 10000); //10 seconds
