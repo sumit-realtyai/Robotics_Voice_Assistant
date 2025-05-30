@@ -407,10 +407,10 @@ useEffect(() => {
     }, 10000); //10 seconds
 
     // Immediately stop audio if wake word is detected
-    if ((mediaDetection || keywordDetection) && !audio.paused) {
+    if ((mediaDetection || keywordDetection || isAssistantOnRef.current) && !audio.paused) {
       audio.pause();
       audio.currentTime = 0;
-      console.log("Wake word detected — paused audio immediately.");
+      console.log("Wake word detected or user manually started vapi — paused audio immediately.");
       clearInterval(intervalId);
     }
 
