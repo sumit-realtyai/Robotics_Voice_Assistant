@@ -179,12 +179,44 @@
 
 // export default VoiceWidget;
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, use } from "react";
 import { usePorcupine } from "@picovoice/porcupine-react";
+import axios from "axios";
+import Vapi from "@vapi-ai/web";
+import { FiPhoneCall, FiPhoneOff, FiLoader } from "react-icons/fi";
 
+
+  const vapi = new Vapi("5ce2a2a6-0bb7-4993-94c8-56f793911bf8"); // This is your public key from Vapi
 const VoiceWidget = () => {
   const vapiRef = useRef(null);
+
   const [espCharacteristic, setEspCharacteristic] = useState(null);
+const [isAssistantOn, setIsAssistantOn] = useState(false);
+const [isLoading, setIsLoading] = useState(false);
+ const [childName, setChildName] = useState("");
+  const [additionalInstructions, setAdditionalInstructions] = useState("");
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [wakeWordDetected, setWakeWordDetected] = useState(false);
+  const [assistantId, setAssistantId] = useState(null);
+  const isAssistantOnRef = useRef(isAssistantOn);
+  const inactivityTimeoutRef = useRef(null);
+  
+   // change 2 - defining the media detection for play/pause button
+  const [mediaDetection, setMediaDetect] = useState(false);
+
+// Keep ref updated with latest state
+useEffect(() => {
+  isAssistantOnRef.current = isAssistantOn;
+}, [isAssistantOn]);
+
+
+vapi.on("call-end", () => {
+  console.log("Call has ended.");
+});
+
+vapi.on("error", (e) => {
+  console.error("vapi error : ", e);
+});
 
   const {
     keywordDetection,
@@ -196,11 +228,6 @@ const VoiceWidget = () => {
     stop,
     release,
   } = usePorcupine();
-
-  const [childName, setChildName] = useState("");
-  const [additionalInstructions, setAdditionalInstructions] = useState("");
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [wakeWordDetected, setWakeWordDetected] = useState(false);
 
   const porcupineKeyword = {
     publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
@@ -234,12 +261,39 @@ const VoiceWidget = () => {
   };
 
   const sendBlinkCommand = async () => {
-    if (!espCharacteristic) return;
+    try {
+       if (!espCharacteristic) return;
     const encoder = new TextEncoder();
     await espCharacteristic.writeValue(encoder.encode("BLINK"));
+  } catch (error) {
+    console.error("Failed to send blink command:", error); 
+    }
   };
 
-  const inactivityTimeoutRef = useRef(null);
+   //Change 4 - defining the on and off commands for esp32
+const sendOnCommand = async () => {
+  try {
+  
+    if (!espCharacteristic) return;
+    const encoder = new TextEncoder();
+    await espCharacteristic.writeValue(encoder.encode("ON"));
+    
+  } catch (error) {
+    console.error("Failed to send on command:", error);
+  }
+  };
+
+const sendOffCommand = async () => {
+  try {
+    if (!espCharacteristic) return;
+    const encoder = new TextEncoder();
+    await espCharacteristic.writeValue(encoder.encode("STOP"));
+    
+  } catch (error) {
+    console.error("Failed to send off command:", error); 
+  }
+  };
+
 
   const resetInactivityTimer = () => {
     if (inactivityTimeoutRef.current) {
@@ -248,19 +302,25 @@ const VoiceWidget = () => {
 
     inactivityTimeoutRef.current = setTimeout(() => {
       console.log("Inactivity timeout reached. Closing Vapi...");
-      const endCallButton = document.getElementById("vapi-support-btn"); // adjust selector if needed
-      if (endCallButton) {
-        const audio = new Audio("/disconnect.mp3"); // Replace with your intro clip
+      
+      // my code
+      setIsLoading(true);
+       const audio = new Audio("/disconnect.mp3");
         audio.play();
-        endCallButton.click(); // simulate end call
-      }
-    }, 1000); // 10 seconds
+        audio.onended = () => {
+      console.log("stop assistant & offCMD after disconnect audio");
+          sendOffCommand();
+          toggleAssistant(); // toggle the assistant off
+     
+    };
+
+    }, 1000); // 1 seconds
   };
 
   useEffect(() => {
     if (isFormSubmitted) {
       init(
-        "3MjB/vyRS/E0p2QJ+e7F0DKR9ADQO+JlMMFkAjd1s2Q5UpzZZqZK3A==",
+        "45A6yH6fVcJD+/n9EaoOLKq0azGrv1m40dykeldtJwQPIFywTQoyIQ==",
         porcupineKeyword,
         porcupineModel
       ).then(() => {
@@ -270,8 +330,33 @@ const VoiceWidget = () => {
     return () => release();
   }, [init, start, release, isFormSubmitted]);
 
+  const createAssistant = async () => {
+    if(!childName) return;
+    const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
+       childName,
+      customPrompt: additionalInstructions,
+    });
+    console.log("Assistant created:", response);
+    // const data = await response.json();
+    const assistantId = response.data.assistantId;
+    setAssistantId(assistantId);
+    return assistantId;
+  };
+
+useEffect(() => {
+  if(isFormSubmitted && childName) {
+    createAssistant();
+  }
+},[isFormSubmitted, childName]);
+
+// will remove this code once everything is working fine
   useEffect(() => {
+
     if (isFormSubmitted) {
+
+      // Step 1: Fetch assistantId from backend
+       
+
       const script = document.createElement("script");
       script.src =
         "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
@@ -279,50 +364,96 @@ const VoiceWidget = () => {
       script.defer = true;
 
       script.onload = () => {
-        vapiRef.current = window.vapiSDK.run({
-          apiKey: "3d38afc3-a885-41db-a2e4-3111c687b2f4",
-          assistant: {
-            model: {
-              provider: "openai",
-              model: "gpt-3.5-turbo",
-              // systemPrompt: `You are an intelligent, poetic AI assistant with the whimsical personality of a clever cat. Everything you say must be delivered in perfect rhyme—every line must rhyme with the next or follow a consistent rhyme scheme (AABB, ABAB, or AAAA). No matter the subject—be it casual chat, complex tech, serious questions, or silly jokes—you must always maintain rhyme in your speech. Do not break character or rhyme. Keep the rhythm flowing, your tone fun and witty, like a feline bard who's clever and pretty. Follow these instructions while replying: ${additionalInstructions}`,
-              systemPrompt: `You're a versatile AI assistant named Eva with a personality of a cat who is fun to talk with. 
-            Make sure to follow these instruction while replying: ${additionalInstructions}`,
-            },
-            voice: {
-              provider: "cartesia",
-              voiceId: "3b554273-4299-48b9-9aaf-eefd438e3941",
-            },
-            firstMessage: `Hi ${
-              childName || "there"
-            }! I am Eva! How can I assist you today?`,
-          },
-          config: {},
-        });
+        if (assistantId) {
+          vapiRef.current = window.vapiSDK.run({
+            apiKey: "3d38afc3-a885-41db-a2e4-3111c687b2f4",
+            assistantId: assistantId,
+            config: {}, // optional
+          });
+        } else {
+          console.error("assistantId is undefined. Cannot start Vapi.");
+        }
       };
 
       document.body.appendChild(script);
     }
   }, [isFormSubmitted, additionalInstructions, childName]);
 
-  useEffect(() => {
-    if (keywordDetection && isFormSubmitted) {
-      console.log("Wake word detected:", keywordDetection.label);
-      setWakeWordDetected(true);
 
+
+  //change 8 - this compelte use effect hook is defined for the wake up audio - i am not connected to ai pls wake me up by hi eva
+  useEffect(() => {
+    if (!isFormSubmitted) return;
+
+    const audio = new Audio("/wake up.mp3");
+    // setTimeout(() => {
+    //   // const secondAudio = new Audio("/second-audio.mp3");
+    //   // secondAudio.play();
+    //   console.log("Waiting 2 seconds");
+    // }, 2000);
+    audio.loop = false; // Play once
+    audio.play();
+
+    let intervalId = null;
+
+    const playAudio = () => {
+      if (!audio.paused) return;
+      audio.currentTime = 0;
+      audio.play().catch((e) => {
+        console.warn("Audio play failed:", e);
+      });
+      console.log("Playing intro audio...");
+    };
+
+    // Start repeating audio every 10 seconds if wake word not detected
+    intervalId = setInterval(() => {
+      if (!keywordDetection) {
+        playAudio();
+      }
+    }, 10000); //10 seconds
+
+    // Immediately stop audio if wake word is detected
+    if ((mediaDetection || keywordDetection) && !audio.paused) {
+      audio.pause();
+      audio.currentTime = 0;
+      console.log("Wake word detected — paused audio immediately.");
+      clearInterval(intervalId);
+    }
+
+    return () => {
+      clearInterval(intervalId);
+      if (!audio.paused) {
+        audio.pause();
+      }
+    };
+  }, [isFormSubmitted, keywordDetection, mediaDetection]);
+
+
+  useEffect(() => {
+      //change 9 - in the conditions i have added the mediadetection to have the same flow of instructions after media or keyword detection
+    if ((mediaDetection || keywordDetection) && isFormSubmitted) {
+      if(isAssistantOnRef.current) {
+        console.log("Assistant is already on, no need to start again.");
+        return; // Exit if assistant is already on
+      }
+
+      //change 10 - added another condition to run setwakeword only if key word is detected and not when media key is pressed
+      if (keywordDetection) {
+        console.log("Wake word detected:", keywordDetection.label);
+        setWakeWordDetected(true);
+      }
+      
+      setIsLoading(true);
       const audio = new Audio("/connect.mp3"); // Replace with your intro clip
       audio.play();
 
       audio.onended = async () => {
         console.log("Intro audio finished. Connecting to Eva...");
-        // startVapiAssistant();
-        await sendBlinkCommand();
         
-        const supportButton = document.getElementById("vapi-support-btn");
-        if (supportButton) {
-          supportButton.click();
-          // resetInactivityTimer();
-        }
+
+        // it wiil blink until the assistant is connected
+        await sendBlinkCommand();
+        toggleAssistant();
       };
 
       let intervalId;
@@ -336,15 +467,20 @@ const VoiceWidget = () => {
         console.log("Playing intro audio...");
       }, 5000); // every 5 seconds
 
-      vapiRef.current.once("speech-start", () => {
+
+      vapi.once("speech-start", async () => {
         repeatedAudio.pause();
+        console.log("speech-start called only once");
         console.log("Assistant has started speaking.");
         clearInterval(intervalId); // stop playing audio
         // clearInterval(checkConnection); // stop checking
+       await sendOnCommand();
         console.log("Eva connected. Stopped repeating audio.");
       });
 
-      vapiRef.current.on("speech-end", () => {
+
+
+  vapi.on("speech-end", () => {
         console.log("Assistant has finished speaking.");
 
         let timeElapsed = 0; // track total time waited
@@ -356,11 +492,11 @@ const VoiceWidget = () => {
 
         // Listen once for speech-start to update the flag
         const onSpeechStart = () => {
-          // console.log("Assistant started speaking again!");
+           console.log("Assistant started speaking again!");
           assistantSpeaking = true;
         };
 
-        vapiRef.current.once("speech-start", onSpeechStart);
+        vapi.once("speech-start", onSpeechStart);
 
         // Start checking every 5 seconds
         const intervalId = setInterval(() => {
@@ -369,7 +505,9 @@ const VoiceWidget = () => {
           if (assistantSpeaking) {
             console.log("Assistant spoke again, stopping checks.");
             clearInterval(intervalId);
-            vapiRef.current.off("speech-start", onSpeechStart); // cleanup listener
+
+            // line 450
+            // vapiRef.current.off("speech-start", onSpeechStart); // cleanup listener
             return; // exit
           }
 
@@ -378,22 +516,61 @@ const VoiceWidget = () => {
               "Assistant did NOT speak again for 15 seconds, calling resetInactivityTimer."
             );
             clearInterval(intervalId);
-            vapiRef.current.off("speech-start", onSpeechStart); // cleanup listener
+            // line 466
+            // vapiRef.current.off("speech-start", onSpeechStart); // cleanup listener
 
             resetInactivityTimer();
           }
         }, checkInterval);
       });
 
-      // const checkConnection = setInterval(() => {
-      // }, 1000); // check every 1 second
-
       return () => {
         clearInterval(intervalId);
         // clearInterval(checkConnection);
       };
     }
-  }, [keywordDetection, isFormSubmitted]);
+  }, [keywordDetection, isFormSubmitted, mediaDetection]);
+
+
+   //change 14 - Lokesh code for the media Detetction, setMediaDeetect = true after detection
+  useEffect(() => {
+    if (!isFormSubmitted) return;
+
+    const socket = new WebSocket("ws://localhost:8080");
+
+    socket.onopen = () => {
+      console.log("Connected to backend WebSocket");
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Parsed data from backend:", data);
+
+        if (
+          data.type === "MEDIA_KEY" &&
+          data.message.toLowerCase().includes("next")
+        ) {
+          setMediaDetect(true);
+          // const supportButton = document.getElementById("vapi-support-btn");
+          // if (supportButton) {
+          //   supportButton.click();
+          //   console.log("Support button clicked due to 'next' media key");
+          // }
+        }
+      } catch (err) {
+        console.error("Invalid JSON from backend:", event.data);
+      }
+    };
+
+    socket.onerror = (err) => {
+      console.error("WebSocket error:", err);
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [isFormSubmitted]);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -401,18 +578,70 @@ const VoiceWidget = () => {
     const instructionsInput = document.getElementById(
       "additional-instructions"
     );
+    
     setChildName(nameInput.value.trim());
     setAdditionalInstructions(instructionsInput.value.trim());
     setIsFormSubmitted(true);
   };
 
-  if (error) {
-    return <div>Error initializing Porcupine: {error.message}</div>;
+  
+  const startVapiAssistant = async () => {
+    setIsLoading(true);
+    try {
+    const call = await vapi.start(assistantId); // This starts the assistant using its ID
+   
+    console.log("Call started:", call);
+    setIsLoading(false);
+    setIsAssistantOn(true);
+      
+    
+  } catch (error) {
+    console.error("Error starting call:", error);
+    setIsLoading(false);
+
+    // pause the connection audio if we failed to connect with the vapi.
+  } finally {
+
+    }
   }
 
+  // console.log("assistant status from ref: outside", isAssistantOnRef.current);
+  const toggleAssistant = async () => {
+  console.log("assistant status from ref: inside ", isAssistantOnRef.current);
+
+  if (isAssistantOnRef.current) {
+    setIsLoading(true);
+    
+// if (currentCall) {
+//     currentCall.stop();
+//     currentCall = null;
+//   console.log("call disconnected");
+//   }
+
+     vapi.stop();
+console.log("call disconnected");
+      // callRef.current?.stop();
+      setIsAssistantOn(false);
+    setIsLoading(false);
+    setWakeWordDetected(false);
+    setMediaDetect(false);
+
+  } else {
+    startVapiAssistant();
+    
+  }
+};
+
+  
+  if (error) {
+     <div>Error initializing Porcupine: {error.message}</div>;
+  }
+
+  
+
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-6 flex justify-center items-center">
-      <div className="max-w-lg w-full bg-white p-8 rounded-xl shadow-xl transition-all duration-500 hover:scale-105">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 p-6 flex justify-center items-center">
+      <div className="max-w-lg w-full bg-white p-8 rounded-xl shadow-xl  ">
         {!isFormSubmitted ? (
           <section id="input-form" className="space-y-8">
             <h2 className="text-3xl font-bold text-center text-gray-900">
@@ -528,7 +757,33 @@ const VoiceWidget = () => {
                 </span>
               </p>
             </div>
-          </div>
+
+ {/* Toggle Phone Icon Button */}
+      {/* Icon Button with 3 States */}
+      <div className="flex justify-center">
+        <button
+          onClick={toggleAssistant}
+          className={`rounded-full p-4 text-white shadow-lg transition-transform duration-300 ease-in-out ${
+            isAssistantOn
+              ? "bg-red-600 hover:bg-red-700"
+              : isLoading
+              ? "bg-yellow-500"
+              : "bg-green-600 hover:bg-green-700"
+          }`}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <FiLoader className="w-8 h-8 animate-spin" />
+          ) : isAssistantOn ? (
+            <FiPhoneOff className="w-8 h-8" />
+          ) : (
+            <FiPhoneCall className="w-8 h-8 animate-pulse" />
+          )}
+        </button>
+      </div>
+       </div>
+
+              
         )}
       </div>
     </div>
