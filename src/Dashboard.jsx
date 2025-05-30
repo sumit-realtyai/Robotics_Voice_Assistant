@@ -17,7 +17,7 @@ export default function Dashboard() {
     <div className="flex items-center justify-center gap-3 mb-3">
       <FaMicrophoneAlt className="text-3xl text-blue-600" />
       <h1 className="text-4xl font-extrabold text-gray-800">
-        Voice AI Dashboard
+        Talkypies Dashboard
       </h1>
     </div>
     <p className="text-gray-600 max-w-xl text-center mx-auto text-base">
