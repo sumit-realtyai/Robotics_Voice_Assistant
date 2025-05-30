@@ -314,7 +314,7 @@ const sendOffCommand = async () => {
   useEffect(() => {
     if (isFormSubmitted) {
       init(
-        "45A6yH6fVcJD+/n9EaoOLKq0azGrv1m40dykeldtJwQPIFywTQoyIQ==",
+        "gI5vQzZ4ANmk3sTYd4fo+jt55UEIrHEhIvFqtbWJeVDxmUFfF/R9VA==",
         porcupineKeyword,
         porcupineModel
       ).then(() => {
