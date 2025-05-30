@@ -420,7 +420,7 @@ useEffect(() => {
         audio.pause();
       }
     };
-  }, [isFormSubmitted, keywordDetection, mediaDetection]);
+  }, [isFormSubmitted, keywordDetection, mediaDetection, isAssistantOnRef.current]);
 
 
   useEffect(() => {
