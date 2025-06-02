@@ -37,7 +37,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4">
       {!isFormSubmitted ? (
         <section className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
