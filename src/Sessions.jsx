@@ -26,7 +26,7 @@ export default function SessionsPage() {
   }, []);
 
   return (
-    <div className="bg-gradient-to-b from-slate-100 to-slate-200 min-h-screen  py-12 px-4 sm:px-8">
+    <div className="py-12 px-4 sm:px-8">
   {/* Summary Metrics */}
   <div className="max-w-4xl mx-auto mb-10 text-center">
     <h1 className="text-3xl font-bold text-gray-800 mb-4">Call Sessions</h1>
