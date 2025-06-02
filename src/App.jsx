@@ -1,7 +1,6 @@
-// App.jsx
 import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import './App.css';
+import Navbar from "./components/Navbar";
 
 const Dashboard = React.lazy(() => import("./Dashboard.jsx"));
 const VoiceWidget = React.lazy(() => import("./VoiceWidget.jsx"));
@@ -12,16 +11,19 @@ const Sessions = React.lazy(() => import("./Sessions.jsx"));
 function App() {
   return (
     <Router>
-      <div className="App">
-        <Suspense fallback={<div className="text-center mt-10">Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/vapi" element={<VoiceWidget />} />
-            <Route path="/synthflow" element={<Synthflow />} />
-            <Route path="/voiceflow" element={<Voiceflow />} />
-            <Route path="/sessions" element={<Sessions />} />
-          </Routes>
-        </Suspense>
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <Suspense fallback={<div className="text-center mt-10">Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/vapi" element={<VoiceWidget />} />
+              <Route path="/synthflow" element={<Synthflow />} />
+              <Route path="/voiceflow" element={<Voiceflow />} />
+              <Route path="/sessions" element={<Sessions />} />
+            </Routes>
+          </Suspense>
+        </div>
       </div>
     </Router>
   );
