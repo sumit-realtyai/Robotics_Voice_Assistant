@@ -39,7 +39,7 @@ export default function Dashboard() {
   return (
     <div className="max-w-4xl mx-auto">
       {!isFormSubmitted ? (
-        <section id="input-form" className="bg-white p-8 rounded-xl shadow-xl">
+        <section id="input-form\" className="bg-white p-8 rounded-xl shadow-xl">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
             Input Details
           </h2>
