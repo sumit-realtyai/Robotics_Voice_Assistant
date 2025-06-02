@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaMicrophoneAlt, FaRobot, FaComments } from "react-icons/fa";
+import { FaMicrophoneAlt, FaRobot, FaComments, FaChild } from "react-icons/fa";
+import { MdSchool, MdChildCare } from "react-icons/md";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -37,12 +38,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4">
       {!isFormSubmitted ? (
         <section className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
-            Kid's Details
-          </h2>
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <MdChildCare className="text-3xl text-indigo-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Kid's Details</h2>
+          </div>
+          
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div>
               <label htmlFor="childName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -93,18 +96,33 @@ export default function Dashboard() {
               </select>
             </div>
 
-            <div>
-              <label htmlFor="additionalInstructions" className="block text-sm font-medium text-gray-700 mb-1">
-                Additional Instructions
+            <div className="space-y-2">
+              <label htmlFor="additionalInstructions" className="block text-sm font-medium text-gray-700">
+                Parent's Instructions
               </label>
+              <div className="bg-blue-50 p-3 rounded-lg mb-2">
+                <div className="flex items-start gap-2 mb-2">
+                  <MdSchool className="text-blue-600 text-xl mt-1" />
+                  <p className="text-sm text-blue-800">
+                    Share details about your child's education, interests, or any specific learning goals. This helps us personalize the AI interaction.
+                  </p>
+                </div>
+                <ul className="text-xs text-blue-700 ml-7 list-disc">
+                  <li>Current grade or learning level</li>
+                  <li>Favorite subjects or topics</li>
+                  <li>Learning style preferences</li>
+                  <li>Special interests or hobbies</li>
+                  <li>Any specific topics to focus on or avoid</li>
+                </ul>
+              </div>
               <textarea
                 id="additionalInstructions"
                 name="additionalInstructions"
                 value={formData.additionalInstructions}
                 onChange={handleInputChange}
-                rows="3"
-                placeholder="Enter any specific instructions..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                rows="4"
+                placeholder="Example: Sarah is in 3rd grade, loves science experiments and space. She learns best through interactive stories..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               />
             </div>
 
