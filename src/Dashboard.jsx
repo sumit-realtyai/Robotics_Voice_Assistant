@@ -37,11 +37,11 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
       {!isFormSubmitted ? (
-        <section id="input-form\" className="bg-white p-8 rounded-xl shadow-xl">
+        <section className="w-full max-w-2xl bg-white p-8 rounded-xl shadow-xl">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
-            Input Details
+            Kid's Details
           </h2>
           <form onSubmit={handleFormSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -110,18 +110,18 @@ export default function Dashboard() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition duration-300"
+              className="w-full py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition duration-300 cursor-pointer"
             >
               Continue
             </button>
           </form>
         </section>
       ) : (
-        <div className="bg-white shadow-lg rounded-xl p-8">
-          <h2 className="text-xl font-semibold text-gray-700 mb-3">Select API</h2>
+        <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Select API</h2>
           <select
             onChange={handleApiChange}
-            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-lg"
           >
             <option value="">-- Choose API --</option>
             <option value="vapi">VAPI</option>
