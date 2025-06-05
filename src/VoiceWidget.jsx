@@ -35,7 +35,7 @@ const VoiceWidget = () => {
     stop,
     release,
   } = usePorcupine();
-
+console.log("porcupine error: ", error);
   const porcupineKeyword = {
     publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
     label: "Hi Eva",
@@ -46,6 +46,7 @@ const VoiceWidget = () => {
   };
 
   useEffect(() => {
+    console.log("isAssistantOn changed:", isAssistantOn);
     isAssistantOnRef.current = isAssistantOn;
   }, [isAssistantOn]);
 
@@ -113,7 +114,7 @@ const VoiceWidget = () => {
       audio.play();
       audio.onended = () => {
         console.log("stop assistant & offCMD after disconnect audio");
-        sendOffCommand();
+        
         toggleAssistant();
       };
     }, 1000);
@@ -122,11 +123,14 @@ const VoiceWidget = () => {
   useEffect(() => {
     if (isFormSubmitted) {
       init(
-        "88031ResYctSpBNWZ2Brc+Z/i7z435pSU2K3moxqIZNbdqmE3FNZBQ==",
+        "nnxl3IOpZ2KssYJYClQL9Honw3MYyL0xH69Qjs/rnSXREXBkY1sUcg==",
+        
         porcupineKeyword,
         porcupineModel
       ).then(() => {
         start();
+      }).catch((err) => {
+        console.error("Error initializing Porcupine:", err);  
       });
     }
     return () => release();
@@ -150,79 +154,117 @@ const VoiceWidget = () => {
     }
   }, [isFormSubmitted, childName]);
 
+  // will replace the script tag injection with a more React-friendly approach
+  // useEffect(() => {
+  //   if (isFormSubmitted) {
+  //     const script = document.createElement("script");
+  //     script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+  //     script.async = true;
+  //     script.defer = true;
+
+  //     script.onload = () => {
+  //       if (assistantId) {
+  //         vapiRef.current = window.vapiSDK.run({
+  //           apiKey: "3d38afc3-a885-41db-a2e4-3111c687b2f4",
+  //           assistantId: assistantId,
+  //           config: {},
+  //         });
+  //       } else {
+  //         console.error("assistantId is undefined. Cannot start Vapi.");
+  //       }
+  //     };
+
+  //     document.body.appendChild(script);
+  //   }
+  // }, [isFormSubmitted, additionalInstructions, childName]);
+
   useEffect(() => {
-    if (isFormSubmitted) {
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-      script.async = true;
-      script.defer = true;
+    
+      
 
-      script.onload = () => {
-        if (assistantId) {
-          vapiRef.current = window.vapiSDK.run({
-            apiKey: "3d38afc3-a885-41db-a2e4-3111c687b2f4",
-            assistantId: assistantId,
-            config: {},
-          });
-        } else {
-          console.error("assistantId is undefined. Cannot start Vapi.");
-        }
-      };
-
-      document.body.appendChild(script);
-    }
-  }, [isFormSubmitted, additionalInstructions, childName]);
-
-  useEffect(() => {
     if (!isFormSubmitted) return;
-
+  console.log("assistant: ", isAssistantOn);
+  console.log("wakeWordDetected: ", wakeWordDetected);
+  console.log("mediaDetection: ", mediaDetection);
+  console.log("isFormSubmitted: ", isFormSubmitted);
+  console.log("line 11111111111111");
     const audio = new Audio("/wake up.mp3");
-    audio.loop = false;
-    audio.play();
+      let intervalId = null;
 
-    let intervalId = null;
+
+      // 
+if ((mediaDetection || wakeWordDetected || isAssistantOn) ) {
+      console.log("line 777777777777777777777777777777777777777777");
+      // audio?.pause();
+      console.log("line 8888888888888888888888888888");
+      audio.currentTime = 0;
+      console.log("Wake word detected or user manually started vapi — paused audio immediately.");
+      clearInterval(intervalId);
+      return;
+    }
+
+    audio.loop = false;
+    console.log("line 22222222222222");
+    audio.play().catch((e) => {
+        console.warn("Audio play failed:", e);
+      });
+      console.log("line 33333333333333");
+    
 
     const playAudio = () => {
       if (!audio.paused) return;
+      console.log("line 55555555555555");
       audio.currentTime = 0;
       audio.play().catch((e) => {
         console.warn("Audio play failed:", e);
       });
-      console.log("Playing intro audio...");
+      console.log("line 66666666666666");
+      console.log("Playing starting audio...");
     };
 
     intervalId = setInterval(() => {
-      if (!keywordDetection && !isAssistantOnRef.current) {
+      if (!wakeWordDetected && !isAssistantOn) {
+        console.log("line 44444444444444444444");
         playAudio();
       }
     }, 10000);
 
-    if ((mediaDetection || keywordDetection || isAssistantOnRef.current) && !audio.paused) {
-      audio.pause();
-      audio.currentTime = 0;
-      console.log("Wake word detected or user manually started vapi — paused audio immediately.");
-      clearInterval(intervalId);
-    }
+    
+       
 
     return () => {
+      console.log("Cleaning up starting audio interval");
+      audio?.pause();
       clearInterval(intervalId);
       if (!audio.paused) {
-        audio.pause();
+        console.log("line 99999999999999999999999999");
+        audio?.pause();
+        console.log("line 10000000000000000000000000000");
       }
     };
-  }, [isFormSubmitted, keywordDetection, mediaDetection]);
+
+
+     
+
+  }, [isFormSubmitted, wakeWordDetected, mediaDetection, isAssistantOn]);
+
+useEffect(() => {
+  if (keywordDetection) {
+        console.log("Wake word detected:", keywordDetection.label);
+        setWakeWordDetected(true);
+      }
+},[keywordDetection]);
+
+  
 
   useEffect(() => {
-    if ((mediaDetection || keywordDetection) && isFormSubmitted) {
+    if ((mediaDetection || wakeWordDetected) && isFormSubmitted) {
       if (isAssistantOnRef.current) {
         console.log("Assistant is already on, no need to start again.");
         return;
       }
 
-      if (keywordDetection) {
-        console.log("Wake word detected:", keywordDetection.label);
-        setWakeWordDetected(true);
-      }
+      
 
       setIsLoading(true);
       const audio = new Audio("/connect.mp3");
@@ -248,48 +290,53 @@ const VoiceWidget = () => {
         console.log("speech-start called only once");
         console.log("Assistant has started speaking.");
         clearInterval(intervalId);
-        await sendOnCommand();
+        sendOnCommand();
         console.log("Eva connected. Stopped repeating audio.");
       });
 
-      vapi.on("speech-end", () => {
-        console.log("Assistant has finished speaking.");
+      // instead of manually checking for inactivity, we can use the vapi events to handle this
+      // vapi.on("speech-end", () => {
+      //   console.log("Assistant has finished speaking.");
 
-        let timeElapsed = 0;
-        const checkInterval = 5000;
-        const maxWaitTime = 15000;
+      //   let timeElapsed = 0;
+      //   const checkInterval = 5000;
+      //   const maxWaitTime = 15000;
 
-        let assistantSpeaking = false;
+      //   let assistantSpeaking = false;
 
-        const onSpeechStart = () => {
-          console.log("Assistant started speaking again!");
-          assistantSpeaking = true;
-        };
+      //   const onSpeechStart = () => {
+      //     console.log("Assistant started speaking again!");
+      //     assistantSpeaking = true;
+      //   };
 
-        vapi.once("speech-start", onSpeechStart);
+      //   vapi.once("speech-start", onSpeechStart);
 
-        const intervalId = setInterval(() => {
-          timeElapsed += checkInterval;
+      //   const intervalId = setInterval(() => {
+      //     timeElapsed += checkInterval;
 
-          if (assistantSpeaking) {
-            console.log("Assistant spoke again, stopping checks.");
-            clearInterval(intervalId);
-            return;
-          }
+      //     if (assistantSpeaking) {
+      //       console.log("Assistant spoke again, stopping checks.");
+      //       clearInterval(intervalId);
+      //       return;
+      //     }
 
-          if (timeElapsed >= maxWaitTime) {
-            console.log("Assistant did NOT speak again for 15 seconds, calling resetInactivityTimer.");
-            clearInterval(intervalId);
-            resetInactivityTimer();
-          }
-        }, checkInterval);
-      });
+      //     if (timeElapsed >= maxWaitTime) {
+      //       console.log("Assistant did NOT speak again for 15 seconds, calling resetInactivityTimer. :",isAssistantOnRef.current);
+      //       clearInterval(intervalId);
+      //       if(isAssistantOnRef.current) {
+      //         resetInactivityTimer();
+      //       }
+      //     }
+      //   }, checkInterval);
+      // });
+
+      
 
       return () => {
         clearInterval(intervalId);
       };
     }
-  }, [keywordDetection, isFormSubmitted, mediaDetection]);
+  }, [wakeWordDetected, isFormSubmitted, mediaDetection]);
 
   useEffect(() => {
     if (!isFormSubmitted) return;
@@ -329,6 +376,12 @@ const VoiceWidget = () => {
       console.log("Call started:", call);
       setIsLoading(false);
       setIsAssistantOn(true);
+      vapi.once("call-end", () => {
+        console.log("Call ended event received", isAssistantOn, "  ", isAssistantOnRef.current);
+        if(isAssistantOnRef.current) {
+        resetInactivityTimer();
+        }
+      })
     } catch (error) {
       console.error("Error starting call:", error);
       setIsLoading(false);
@@ -340,6 +393,7 @@ const VoiceWidget = () => {
 
     if (isAssistantOnRef.current) {
       setIsLoading(true);
+      await sendOffCommand();
       vapi.stop();
       console.log("call disconnected");
       setIsAssistantOn(false);
