@@ -18,7 +18,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center justify-end flex-1 space-x-4">
             <Link
               to="/"
               className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
@@ -32,6 +32,13 @@ const Navbar = () => {
             >
               <MdMonitor className="text-xl" />
               <span>Monitor Sessions</span>
+            </Link>
+            <Link
+              to="/settings"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+            >
+              <MdSettings className="text-xl" />
+              <span>Settings</span>
             </Link>
           </div>
 
@@ -47,17 +54,6 @@ const Navbar = () => {
                 <FaBars className="h-6 w-6" />
               )}
             </button>
-          </div>
-
-          {/* Settings Link (Always Visible) */}
-          <div className="hidden md:flex items-center">
-            <Link
-              to="/settings"
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
-            >
-              <MdSettings className="text-xl" />
-              <span>Settings</span>
-            </Link>
           </div>
         </div>
       </div>

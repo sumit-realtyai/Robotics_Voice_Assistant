@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdChildCare, MdSchool } from "react-icons/md";
-import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart } from "react-icons/fa";
+import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey } from "react-icons/fa";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -10,7 +10,8 @@ export default function Dashboard() {
     age: "",
     gender: "male",
     personality: "",
-    education: ""
+    education: "",
+    porcupineKey: ""
   });
 
   const handleFormSubmit = (e) => {
@@ -73,22 +74,43 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label>
-            <select
-              id="gender"
-              name="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                Gender
+              </label>
+              <select
+                id="gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="porcupineKey" className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="flex items-center gap-2">
+                  <FaKey className="text-yellow-600" />
+                  <span>Porcupine Key (Temporary)</span>
+                </div>
+              </label>
+              <input
+                type="text"
+                id="porcupineKey"
+                name="porcupineKey"
+                value={formData.porcupineKey}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your Porcupine access key"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
