@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaMicrophoneAlt } from 'react-icons/fa';
-import { MdDashboard, MdMonitor } from 'react-icons/md';
+import { MdDashboard, MdMonitor, MdSettings } from 'react-icons/md';
 
 const Navbar = () => {
   return (
@@ -28,6 +28,13 @@ const Navbar = () => {
             >
               <MdMonitor className="text-xl" />
               <span>Monitor Sessions</span>
+            </Link>
+            <Link
+              to="/settings"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+            >
+              <MdSettings className="text-xl" />
+              <span>Settings</span>
             </Link>
           </div>
         </div>

@@ -7,6 +7,7 @@ const VoiceWidget = React.lazy(() => import("./VoiceWidget.jsx"));
 const Synthflow = React.lazy(() => import("./synthflow.jsx"));
 const Voiceflow = React.lazy(() => import("./voiceFlow.jsx"));
 const Sessions = React.lazy(() => import("./Sessions.jsx"));
+const Settings = React.lazy(() => import("./Settings.jsx"));
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/synthflow" element={<Synthflow />} />
               <Route path="/voiceflow" element={<Voiceflow />} />
               <Route path="/sessions" element={<Sessions />} />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </Suspense>
         </div>
