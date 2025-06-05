@@ -18,6 +18,7 @@ const VoiceWidget = () => {
   const [childName, setChildName] = useState(queryParams.get("childName") || "");
   const [personality, setPersonality] = useState(queryParams.get("personality") || "");
   const [education, setEducation] = useState(queryParams.get("education") || "");
+  const [porcupineKey, setPorcupineKey] = useState(queryParams.get("porcupineKey") || "");
   const [isFormSubmitted, setIsFormSubmitted] = useState(queryParams.get("isFormSubmitted") === "true");
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
   const [assistantId, setAssistantId] = useState(null);
@@ -124,8 +125,7 @@ console.log("porcupine error: ", error);
   useEffect(() => {
     if (isFormSubmitted) {
       init(
-        "nnxl3IOpZ2KssYJYClQL9Honw3MYyL0xH69Qjs/rnSXREXBkY1sUcg==",
-        
+        porcupineKey,
         porcupineKeyword,
         porcupineModel
       ).then(() => {
@@ -135,7 +135,7 @@ console.log("porcupine error: ", error);
       });
     }
     return () => release();
-  }, [init, start, release, isFormSubmitted]);
+  }, [init, start, release, isFormSubmitted, porcupineKey]);
 
   const createAssistant = async () => {
     if (!childName) return;
