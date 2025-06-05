@@ -1,14 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRobot, FaComments, FaMicrophoneAlt } from 'react-icons/fa';
 
 const Settings = () => {
   const navigate = useNavigate();
+  const [selectedAssistant, setSelectedAssistant] = useState('vapi');
+
+  useEffect(() => {
+    const savedAssistant = localStorage.getItem('selectedAssistant') || 'vapi';
+    setSelectedAssistant(savedAssistant);
+  }, []);
 
   const handleApiChange = (e) => {
-    const selectedApi = e.target.value;
-    if (selectedApi) {
-      navigate(`/${selectedApi}`);
+    const selected = e.target.value;
+    if (selected) {
+      localStorage.setItem('selectedAssistant', selected);
+      setSelectedAssistant(selected);
+      navigate('/');
     }
   };
 
@@ -43,10 +51,10 @@ const Settings = () => {
         </div>
 
         <select
+          value={selectedAssistant}
           onChange={handleApiChange}
           className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
         >
-          <option value="">-- Select an AI Assistant --</option>
           <option value="vapi">VAPI</option>
           <option value="synthflow">Synthflow</option>
           <option value="voiceflow">Voiceflow</option>
