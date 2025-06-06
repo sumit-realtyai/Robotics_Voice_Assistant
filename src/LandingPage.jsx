@@ -107,14 +107,14 @@ const LandingPage = () => {
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="aspect-video bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center relative">
                 {/* Video placeholder - can be replaced with actual video */}
-                <video 
-                  className="w-full h-full object-cover hidden"
-                  controls
-                  
-                >
-                  {/* Video source will be added when URL is provided */}
-                  <source src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie.mp4" type="video/mp4" />
-                </video>
+                <video
+  className="w-full h-full object-cover hidden"
+  controls
+  src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie.mp4"
+>
+  Your browser does not support the video tag.
+</video>
+
                 {/* Fallback content when no video URL */}
                 {/* <div className="text-center text-white">
                   <FaPlay className="text-6xl mb-4 mx-auto opacity-80" />
