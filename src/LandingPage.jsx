@@ -113,7 +113,7 @@ const LandingPage = () => {
                   poster="https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800"
                 >
                   {/* Video source will be added when URL is provided */}
-                  <source src="" type="video/mp4" />
+                  <source src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie.mp4" type="video/mp4" />
                 </video>
                 {/* Fallback content when no video URL */}
                 <div className="text-center text-white">
