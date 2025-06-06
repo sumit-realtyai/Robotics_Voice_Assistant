@@ -20,7 +20,11 @@ const VoiceflowWidget = () => {
     };
   }, []);
 
-  return null; // No need to render anything for this widget
+  return (
+    <div className="mb-20 md:mb-0">
+      {/* No need to render anything for this widget */}
+    </div>
+  );
 };
 
 export default VoiceflowWidget;

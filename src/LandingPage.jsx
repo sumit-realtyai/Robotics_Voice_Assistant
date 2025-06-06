@@ -11,12 +11,11 @@ const LandingPage = () => {
   };
 
   const handleBuyTalkypie = () => {
-    // This would typically redirect to a purchase page
-    window.open('https://your-store-link.com', '_blank');
+    navigate('/payment');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 mb-20 md:mb-0">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 px-4">
         <div className="max-w-7xl mx-auto">
@@ -106,7 +105,17 @@ const LandingPage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="aspect-video bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+              <div className="aspect-video bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center relative">
+                {/* Video placeholder - can be replaced with actual video */}
+                <video 
+                  className="w-full h-full object-cover hidden"
+                  controls
+                  poster="https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800"
+                >
+                  {/* Video source will be added when URL is provided */}
+                  <source src="" type="video/mp4" />
+                </video>
+                {/* Fallback content when no video URL */}
                 <div className="text-center text-white">
                   <FaPlay className="text-6xl mb-4 mx-auto opacity-80" />
                   <h3 className="text-xl font-bold">Educational Conversations</h3>
@@ -122,7 +131,17 @@ const LandingPage = () => {
             </div>
             
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="aspect-video bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+              <div className="aspect-video bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center relative">
+                {/* Video placeholder - can be replaced with actual video */}
+                <video 
+                  className="w-full h-full object-cover hidden"
+                  controls
+                  poster="https://images.pexels.com/photos/8613092/pexels-photo-8613092.jpeg?auto=compress&cs=tinysrgb&w=800"
+                >
+                  {/* Video source will be added when URL is provided */}
+                  <source src="" type="video/mp4" />
+                </video>
+                {/* Fallback content when no video URL */}
                 <div className="text-center text-white">
                   <FaPlay className="text-6xl mb-4 mx-auto opacity-80" />
                   <h3 className="text-xl font-bold">Language Development</h3>

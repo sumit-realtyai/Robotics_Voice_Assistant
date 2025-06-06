@@ -33,7 +33,7 @@ export default function StartTalkypie() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 mb-20 md:mb-0">
       <section className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6">
         <div className="flex items-center justify-center gap-3 mb-6">
           <MdChildCare className="text-3xl text-indigo-600" />

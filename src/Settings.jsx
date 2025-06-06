@@ -21,7 +21,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-10">
+    <div className="w-full max-w-md mx-auto mt-10 mb-20 md:mb-0">
       <div className="bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">AI Assistant Settings</h2>
         <p className="text-gray-600 text-center mb-8">Choose your preferred AI assistant</p>
