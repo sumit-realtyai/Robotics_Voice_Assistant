@@ -113,7 +113,7 @@ const LandingPage = () => {
                   poster="https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800"
                 >
                   {/* Video source will be added when URL is provided */}
-                  <source src="" type="video/mp4" />
+                  <source src="https://drive.google.com/file/d/1J1dIJuDIi7Kg3P-WbKBVqR8ovY_7GnjG/view?usp=sharing" type="video/mp4" />
                 </video>
                 {/* Fallback content when no video URL */}
                 <div className="text-center text-white">
