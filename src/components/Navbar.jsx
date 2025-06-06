@@ -20,11 +20,11 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center justify-end flex-1 space-x-4">
             <Link
-              to="/"
+              to="/start"
               className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
             >
               <MdDashboard className="text-xl" />
-              <span>Dashboard</span>
+              <span>Start Talkypie</span>
             </Link>
             <Link
               to="/sessions"
@@ -78,11 +78,11 @@ const Navbar = () => {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t md:hidden">
         <div className="grid grid-cols-2 gap-1">
           <Link
-            to="/"
+            to="/start"
             className="flex flex-col items-center justify-center py-2 text-gray-700 hover:bg-gray-100"
           >
             <MdDashboard className="text-xl" />
-            <span className="text-xs">Dashboard</span>
+            <span className="text-xs">Start Talkypie</span>
           </Link>
           <Link
             to="/sessions"
