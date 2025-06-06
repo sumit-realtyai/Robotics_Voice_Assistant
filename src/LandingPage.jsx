@@ -110,17 +110,17 @@ const LandingPage = () => {
                 <video 
                   className="w-full h-full object-cover hidden"
                   controls
-                  poster="https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  
                 >
                   {/* Video source will be added when URL is provided */}
                   <source src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie.mp4" type="video/mp4" />
                 </video>
                 {/* Fallback content when no video URL */}
-                <div className="text-center text-white">
+                {/* <div className="text-center text-white">
                   <FaPlay className="text-6xl mb-4 mx-auto opacity-80" />
                   <h3 className="text-xl font-bold">Educational Conversations</h3>
                   <p className="text-sm opacity-90 mt-2">See how Talkypies makes learning fun</p>
-                </div>
+                </div> */}
               </div>
               <div className="p-6">
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Learning Through Play</h4>
