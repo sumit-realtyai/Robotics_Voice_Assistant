@@ -14,14 +14,6 @@ const LandingPage = () => {
     navigate('/payment');
   };
 
-  // Convert Google Drive URL to embeddable format
-  const getEmbedUrl = (driveUrl) => {
-    const fileId = driveUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-    return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : null;
-  };
-
-  const educationVideoUrl = getEmbedUrl('https://drive.google.com/file/d/1J1dIJuDIi7Kg3P-WbKBVqR8ovY_7GnjG/view?usp=sharing');
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 mb-20 md:mb-0">
       {/* Hero Section */}
@@ -112,36 +104,32 @@ const LandingPage = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Education Video */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="aspect-video relative">
-                {educationVideoUrl ? (
-                  <iframe
-                    src={educationVideoUrl}
-                    className="w-full h-full"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                    title="Educational Conversations with Talkypie"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <FaPlay className="text-6xl mb-4 mx-auto opacity-80" />
-                      <h3 className="text-xl font-bold">Educational Conversations</h3>
-                      <p className="text-sm opacity-90 mt-2">See how Talkypies makes learning fun</p>
-                    </div>
-                  </div>
-                )}
+              <div className="aspect-video bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center relative">
+                {/* Video placeholder - can be replaced with actual video */}
+                <video 
+                  className="w-full h-full object-cover hidden"
+                  controls
+                  poster="https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800"
+                >
+                  {/* Video source will be added when URL is provided */}
+                  <source src="" type="video/mp4" />
+                </video>
+                {/* Fallback content when no video URL */}
+                <div className="text-center text-white">
+                  <FaPlay className="text-6xl mb-4 mx-auto opacity-80" />
+                  <h3 className="text-xl font-bold">Educational Conversations</h3>
+                  <p className="text-sm opacity-90 mt-2">See how Talkypies makes learning fun</p>
+                </div>
               </div>
               <div className="p-6">
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Learning Through Play</h4>
                 <p className="text-gray-600">
-                  Watch how Talkypies creates engaging educational conversations that make learning fun and interactive for children.
+                  Watch 7-year-old Emma explore science concepts through interactive storytelling with her Talkypie.
                 </p>
               </div>
             </div>
             
-            {/* Language Development Video Placeholder */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="aspect-video bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center relative">
                 {/* Video placeholder - can be replaced with actual video */}
