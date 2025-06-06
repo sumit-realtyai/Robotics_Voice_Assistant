@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdChildCare, MdSchool } from "react-icons/md";
-import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey } from "react-icons/fa";
+import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey, FaStar, FaGraduationCap } from "react-icons/fa";
 
 export default function StartTalkypie() {
   const navigate = useNavigate();
@@ -9,8 +9,8 @@ export default function StartTalkypie() {
     childName: "",
     age: "",
     gender: "male",
-    personality: "",
-    education: "",
+    interests: "",
+    currentLearning: "",
     porcupineKey: ""
   });
 
@@ -115,67 +115,65 @@ export default function StartTalkypie() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label htmlFor="personality" className="block text-sm font-medium text-gray-700">
-                Personality & Social Traits
+              <label htmlFor="interests" className="block text-sm font-medium text-gray-700">
+                What does your child like (or dislike)?
               </label>
               <div className="bg-rose-50 p-4 rounded-lg mb-2">
                 <div className="flex items-start gap-2 mb-3">
-                  <FaHeart className="text-rose-600 text-xl mt-1" />
+                  <FaStar className="text-rose-600 text-xl mt-1" />
                   <div>
-                    <h4 className="font-semibold text-rose-900 mb-1">Personality Profile</h4>
+                    <h4 className="font-semibold text-rose-900 mb-1">Interests & Preferences</h4>
                     <p className="text-sm text-rose-800">
-                      Help us understand your child's unique personality and social preferences
+                      Help us understand what excites or bores your child, so Talkypie can spark better conversations.
                     </p>
                   </div>
                 </div>
-                <ul className="text-sm text-rose-700 ml-7 list-disc space-y-1">
-                  <li>Temperament (shy, outgoing, etc.)</li>
-                  <li>Social interaction style</li>
-                  <li>Emotional expression</li>
-                  <li>Communication preferences</li>
-                  <li>Comfort with new situations</li>
-                </ul>
+                <div className="bg-rose-100 rounded-lg p-3 ml-7">
+                  <p className="text-sm text-rose-800 font-medium mb-1">✍ Example:</p>
+                  <p className="text-sm text-rose-700">
+                    Loves animals and space, dislikes long stories; enjoys jokes, music, and pretend play.
+                  </p>
+                </div>
               </div>
               <textarea
-                id="personality"
-                name="personality"
-                value={formData.personality}
+                id="interests"
+                name="interests"
+                value={formData.interests}
                 onChange={handleInputChange}
                 rows="4"
-                placeholder="Example: Emma is naturally curious and outgoing. She loves making new friends but sometimes needs help managing excitement..."
+                placeholder="Tell us about your child's likes, dislikes, hobbies, favorite activities, and interests..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="education" className="block text-sm font-medium text-gray-700">
-                Educational Background
+              <label htmlFor="currentLearning" className="block text-sm font-medium text-gray-700">
+                What is your child currently learning in school?
               </label>
               <div className="bg-blue-50 p-4 rounded-lg mb-2">
                 <div className="flex items-start gap-2 mb-3">
-                  <FaBookReader className="text-blue-600 text-xl mt-1" />
+                  <FaGraduationCap className="text-blue-600 text-xl mt-1" />
                   <div>
-                    <h4 className="font-semibold text-blue-900 mb-1">Learning Profile</h4>
+                    <h4 className="font-semibold text-blue-900 mb-1">Current Learning</h4>
                     <p className="text-sm text-blue-800">
-                      Share your child's educational journey and learning preferences
+                      Let Talkypie gently support your child's current learning through playful chat.
                     </p>
                   </div>
                 </div>
-                <ul className="text-sm text-blue-700 ml-7 list-disc space-y-1">
-                  <li>Current grade level</li>
-                  <li>Favorite subjects</li>
-                  <li>Learning style (visual, hands-on, etc.)</li>
-                  <li>Academic strengths and challenges</li>
-                  <li>Special educational needs</li>
-                </ul>
+                <div className="bg-blue-100 rounded-lg p-3 ml-7">
+                  <p className="text-sm text-blue-800 font-medium mb-1">✍ Example:</p>
+                  <p className="text-sm text-blue-700">
+                    Learning addition and subtraction, Hindi alphabets, and the solar system.
+                  </p>
+                </div>
               </div>
               <textarea
-                id="education"
-                name="education"
-                value={formData.education}
+                id="currentLearning"
+                name="currentLearning"
+                value={formData.currentLearning}
                 onChange={handleInputChange}
                 rows="4"
-                placeholder="Example: Currently in 3rd grade, excels in math and science. Learns best through visual aids and hands-on experiments..."
+                placeholder="Share what your child is currently studying in school, subjects they're working on, or skills they're developing..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               />
             </div>

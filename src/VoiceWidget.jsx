@@ -16,8 +16,8 @@ const VoiceWidget = () => {
   const [isAssistantOn, setIsAssistantOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [childName, setChildName] = useState(queryParams.get("childName") || "");
-  const [personality, setPersonality] = useState(queryParams.get("personality") || "");
-  const [education, setEducation] = useState(queryParams.get("education") || "");
+  const [interests, setInterests] = useState(queryParams.get("interests") || "");
+  const [currentLearning, setCurrentLearning] = useState(queryParams.get("currentLearning") || "");
   const [porcupineKey, setPorcupineKey] = useState(queryParams.get("porcupineKey") || "");
   const [isFormSubmitted, setIsFormSubmitted] = useState(queryParams.get("isFormSubmitted") === "true");
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
@@ -140,13 +140,13 @@ console.log("porcupine error: ", error);
   const createAssistant = async () => {
     if (!childName) return;
     
-    // Combine personality and education into customPrompt
+    // Combine interests and current learning into customPrompt
     const customPrompt = `
-      Personality & Social Traits:
-      ${personality}
+      Child's Interests & Preferences:
+      ${interests}
 
-      Educational Background:
-      ${education}
+      Current Learning in School:
+      ${currentLearning}
     `;
 
     const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
