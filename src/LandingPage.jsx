@@ -108,7 +108,7 @@ const LandingPage = () => {
               <div className="aspect-video bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center relative">
                 {/* Video placeholder - can be replaced with actual video */}
                 <video 
-                  className="w-full h-full object-cover hidden"
+                  className="w-full h-full object-cover "
                   controls
                   poster="https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=800"
                 >
