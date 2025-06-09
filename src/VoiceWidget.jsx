@@ -391,7 +391,7 @@ useEffect(() => {
   };
 
   if (error) {
-    return <div>Error initializing Porcupine: {error.message}</div>;
+     <div>Error initializing Porcupine: {error.message}</div>;
   }
 
   // Show loading state while creating assistant
