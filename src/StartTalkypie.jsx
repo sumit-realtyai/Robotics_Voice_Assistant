@@ -16,12 +16,11 @@ export default function StartTalkypie() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const selectedAssistant = localStorage.getItem('selectedAssistant') || 'vapi';
     const queryParams = new URLSearchParams({
       ...formData,
       isFormSubmitted: true
     }).toString();
-    navigate(`/${selectedAssistant}?${queryParams}`);
+    navigate(`/permissions?${queryParams}`);
   };
 
   const handleInputChange = (e) => {
@@ -183,7 +182,7 @@ export default function StartTalkypie() {
             type="submit"
             className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition-all duration-300 cursor-pointer"
           >
-            Start Learning Journey
+            Continue to Setup
           </button>
         </form>
       </section>

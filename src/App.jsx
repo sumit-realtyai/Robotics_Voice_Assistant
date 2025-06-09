@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 
 const LandingPage = React.lazy(() => import("./LandingPage.jsx"));
 const StartTalkypie = React.lazy(() => import("./StartTalkypie.jsx"));
+const PermissionsCheck = React.lazy(() => import("./components/PermissionsCheck.jsx"));
 const VoiceWidget = React.lazy(() => import("./VoiceWidget.jsx"));
 const Synthflow = React.lazy(() => import("./synthflow.jsx"));
 const Voiceflow = React.lazy(() => import("./voiceFlow.jsx"));
@@ -21,6 +22,7 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/start" element={<StartTalkypie />} />
+              <Route path="/permissions" element={<PermissionsCheck />} />
               <Route path="/vapi" element={<VoiceWidget />} />
               <Route path="/synthflow" element={<Synthflow />} />
               <Route path="/voiceflow" element={<Voiceflow />} />
