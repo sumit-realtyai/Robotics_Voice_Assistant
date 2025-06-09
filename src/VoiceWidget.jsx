@@ -39,7 +39,7 @@ const VoiceWidget = () => {
     stop,
     release,
   } = usePorcupine();
-console.log("porcupine error: ", error);
+
   const porcupineKeyword = {
     publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
     label: "Hi Eva",
