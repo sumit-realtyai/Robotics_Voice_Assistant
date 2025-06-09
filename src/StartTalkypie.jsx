@@ -12,14 +12,16 @@ export default function StartTalkypie() {
     interests: "",
     currentLearning: "",
     porcupineKey: "",
-    vapiKey: ""
+    vapiKey: "",
+    vapiPublicKey: ""
   });
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     
-    // Store VAPI key in localStorage
+    // Store VAPI keys in localStorage
     localStorage.setItem('vapiKey', formData.vapiKey);
+    localStorage.setItem('vapiPublicKey', formData.vapiPublicKey);
     
     const queryParams = new URLSearchParams({
       ...formData,
@@ -117,23 +119,44 @@ export default function StartTalkypie() {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="vapiKey" className="block text-sm font-medium text-gray-700 mb-1">
-              <div className="flex items-center gap-2">
-                <FaRobot className="text-indigo-600" />
-                <span>VAPI Private Key</span>
-              </div>
-            </label>
-            <input
-              type="password"
-              id="vapiKey"
-              name="vapiKey"
-              value={formData.vapiKey}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Enter your VAPI private key"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="vapiKey" className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="flex items-center gap-2">
+                  <FaRobot className="text-indigo-600" />
+                  <span>VAPI Private Key</span>
+                </div>
+              </label>
+              <input
+                type="password"
+                id="vapiKey"
+                name="vapiKey"
+                value={formData.vapiKey}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your VAPI private key"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="vapiPublicKey" className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="flex items-center gap-2">
+                  <FaRobot className="text-green-600" />
+                  <span>VAPI Public Key</span>
+                </div>
+              </label>
+              <input
+                type="text"
+                id="vapiPublicKey"
+                name="vapiPublicKey"
+                value={formData.vapiPublicKey}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your VAPI public key"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

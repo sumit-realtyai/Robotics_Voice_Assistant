@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaMicrophone, FaBluetooth, FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaRobot, FaSpinner } from 'react-icons/fa';
+import { FaMicrophone, FaBluetooth, FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaSpinner } from 'react-icons/fa';
 import { MdBluetooth } from 'react-icons/md';
-import axios from 'axios';
 
 const PermissionsCheck = () => {
   const navigate = useNavigate();
@@ -11,11 +10,8 @@ const PermissionsCheck = () => {
   
   const [microphoneStatus, setMicrophoneStatus] = useState('pending'); // pending, granted, denied
   const [esp32Status, setEsp32Status] = useState('pending'); // pending, connected, failed
-  const [assistantStatus, setAssistantStatus] = useState('pending'); // pending, created, failed
   const [espCharacteristic, setEspCharacteristic] = useState(null);
-  const [assistantId, setAssistantId] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
-  const [isCreatingAssistant, setIsCreatingAssistant] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const childName = queryParams.get("childName") || "";
@@ -25,6 +21,7 @@ const PermissionsCheck = () => {
   const currentLearning = queryParams.get("currentLearning") || "";
   const porcupineKey = queryParams.get("porcupineKey") || "";
   const vapiKey = queryParams.get("vapiKey") || localStorage.getItem('vapiKey') || "";
+  const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
 
   const requestMicrophonePermission = async () => {
     try {
@@ -88,59 +85,6 @@ const PermissionsCheck = () => {
     }
   };
 
-  const createAssistant = async () => {
-    if (!childName || !vapiKey) return;
-    
-    try {
-      setIsCreatingAssistant(true);
-      setErrorMessage('');
-      
-      // Combine interests and current learning into customPrompt
-      const customPrompt = `
-        Child's Interests & Preferences:
-        ${interests}
-
-        Current Learning in School:
-        ${currentLearning}
-      `;
-
-      const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
-        childName,
-        customPrompt,
-        vapiKey
-      });
-      
-      console.log("Assistant created:", response);
-      const newAssistantId = response.data.assistantId;
-      setAssistantId(newAssistantId);
-      setAssistantStatus('created');
-      
-      // Store assistant ID for later use
-      localStorage.setItem('assistantId', newAssistantId);
-      
-    } catch (error) {
-      console.error("Failed to create assistant:", error);
-      setAssistantStatus('failed');
-      
-      if (error.response?.status === 402 || error.response?.data?.message?.includes('credits')) {
-        setErrorMessage('VAPI credits exhausted. Please check your VAPI account and add more credits.');
-      } else if (error.response?.status === 401) {
-        setErrorMessage('Invalid VAPI key. Please check your VAPI private key and try again.');
-      } else {
-        setErrorMessage('Failed to create AI assistant. Please check your VAPI key and try again.');
-      }
-    } finally {
-      setIsCreatingAssistant(false);
-    }
-  };
-
-  // Auto-create assistant when component mounts
-  useEffect(() => {
-    if (childName && vapiKey && assistantStatus === 'pending') {
-      createAssistant();
-    }
-  }, [childName, vapiKey]);
-
   const proceedToVoiceWidget = () => {
     const params = new URLSearchParams({
       childName,
@@ -149,7 +93,8 @@ const PermissionsCheck = () => {
       interests,
       currentLearning,
       porcupineKey,
-      assistantId: assistantId || localStorage.getItem('assistantId') || '',
+      vapiKey,
+      vapiPublicKey,
       isFormSubmitted: 'true'
     });
     
@@ -161,13 +106,12 @@ const PermissionsCheck = () => {
     navigate(`/vapi?${params.toString()}`);
   };
 
-  const canProceed = microphoneStatus === 'granted' && esp32Status === 'connected' && assistantStatus === 'created';
+  const canProceed = microphoneStatus === 'granted' && esp32Status === 'connected';
 
   const getStatusIcon = (status) => {
     switch (status) {
       case 'granted':
       case 'connected':
-      case 'created':
         return <FaCheckCircle className="text-green-500 text-xl" />;
       case 'denied':
       case 'failed':
@@ -184,17 +128,11 @@ const PermissionsCheck = () => {
         case 'denied': return 'Microphone access denied';
         default: return 'Microphone permission required';
       }
-    } else if (type === 'esp32') {
+    } else {
       switch (status) {
         case 'connected': return 'ESP32 connected successfully';
         case 'failed': return 'ESP32 connection failed';
         default: return 'ESP32 connection required';
-      }
-    } else {
-      switch (status) {
-        case 'created': return 'AI assistant created successfully';
-        case 'failed': return 'Failed to create AI assistant';
-        default: return 'Creating AI assistant...';
       }
     }
   };
@@ -212,38 +150,6 @@ const PermissionsCheck = () => {
         </div>
 
         <div className="space-y-4">
-          {/* AI Assistant Creation */}
-          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-200">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <FaRobot className="text-2xl text-indigo-600" />
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">AI Assistant</h3>
-                  <p className="text-sm text-gray-600">Creating personalized assistant for {childName}</p>
-                </div>
-              </div>
-              {isCreatingAssistant ? (
-                <FaSpinner className="text-indigo-500 text-xl animate-spin" />
-              ) : (
-                getStatusIcon(assistantStatus)
-              )}
-            </div>
-            
-            <p className="text-sm text-gray-700 mb-3">
-              {getStatusText(assistantStatus, 'assistant')}
-            </p>
-            
-            {assistantStatus === 'failed' && (
-              <button
-                onClick={createAssistant}
-                disabled={isCreatingAssistant}
-                className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-              >
-                {isCreatingAssistant ? 'Creating Assistant...' : 'Retry Creating Assistant'}
-              </button>
-            )}
-          </div>
-
           {/* Microphone Permission */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
             <div className="flex items-center justify-between mb-3">
