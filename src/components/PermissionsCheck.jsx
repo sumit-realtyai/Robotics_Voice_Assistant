@@ -106,8 +106,8 @@ const PermissionsCheck = () => {
     navigate(`/vapi?${params.toString()}`);
   };
 
-  const canProceed = microphoneStatus === 'granted' && esp32Status === 'connected';
-
+  // const canProceed = microphoneStatus === 'granted' && esp32Status === 'connected';
+const canProceed = true;
   const getStatusIcon = (status) => {
     switch (status) {
       case 'granted':
