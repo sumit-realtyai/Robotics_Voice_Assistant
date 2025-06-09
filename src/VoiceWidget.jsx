@@ -5,8 +5,6 @@ import axios from "axios";
 import Vapi from "@vapi-ai/web";
 import { FiPhoneCall, FiPhoneOff, FiLoader } from "react-icons/fi";
 
-const vapi = new Vapi("5ce2a2a6-0bb7-4993-94c8-56f793911bf8");
-
 const VoiceWidget = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -21,11 +19,15 @@ const VoiceWidget = () => {
   const [porcupineKey, setPorcupineKey] = useState(queryParams.get("porcupineKey") || "");
   const [isFormSubmitted, setIsFormSubmitted] = useState(queryParams.get("isFormSubmitted") === "true");
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
-  const [assistantId, setAssistantId] = useState(null);
+  const [assistantId, setAssistantId] = useState(queryParams.get("assistantId") || localStorage.getItem('assistantId') || null);
   const [mediaDetection, setMediaDetect] = useState(false);
   
   const isAssistantOnRef = useRef(isAssistantOn);
   const inactivityTimeoutRef = useRef(null);
+
+  // Initialize VAPI with stored key
+  const vapiKey = localStorage.getItem('vapiKey') || "5ce2a2a6-0bb7-4993-94c8-56f793911bf8";
+  const vapi = new Vapi(vapiKey);
 
   const {
     keywordDetection,
@@ -136,35 +138,6 @@ console.log("porcupine error: ", error);
     }
     return () => release();
   }, [init, start, release, isFormSubmitted, porcupineKey]);
-
-  const createAssistant = async () => {
-    if (!childName) return;
-    
-    // Combine interests and current learning into customPrompt
-    const customPrompt = `
-      Child's Interests & Preferences:
-      ${interests}
-
-      Current Learning in School:
-      ${currentLearning}
-    `;
-
-    const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
-      childName,
-      customPrompt,
-    });
-    
-    console.log("Assistant created:", response);
-    const assistantId = response.data.assistantId;
-    setAssistantId(assistantId);
-    return assistantId;
-  };
-
-  useEffect(() => {
-    if (isFormSubmitted && childName) {
-      createAssistant();
-    }
-  }, [isFormSubmitted, childName]);
 
   useEffect(() => {
     if (!isFormSubmitted) return;

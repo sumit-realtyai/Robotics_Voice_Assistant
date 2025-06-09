@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdChildCare, MdSchool } from "react-icons/md";
-import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey, FaStar, FaGraduationCap } from "react-icons/fa";
+import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey, FaStar, FaGraduationCap, FaRobot } from "react-icons/fa";
 
 export default function StartTalkypie() {
   const navigate = useNavigate();
@@ -11,11 +11,16 @@ export default function StartTalkypie() {
     gender: "male",
     interests: "",
     currentLearning: "",
-    porcupineKey: ""
+    porcupineKey: "",
+    vapiKey: ""
   });
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    
+    // Store VAPI key in localStorage
+    localStorage.setItem('vapiKey', formData.vapiKey);
+    
     const queryParams = new URLSearchParams({
       ...formData,
       isFormSubmitted: true
@@ -96,7 +101,7 @@ export default function StartTalkypie() {
               <label htmlFor="porcupineKey" className="block text-sm font-medium text-gray-700 mb-1">
                 <div className="flex items-center gap-2">
                   <FaKey className="text-yellow-600" />
-                  <span>Porcupine Key (Temporary)</span>
+                  <span>Porcupine Key</span>
                 </div>
               </label>
               <input
@@ -110,6 +115,25 @@ export default function StartTalkypie() {
                 placeholder="Enter your Porcupine access key"
               />
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="vapiKey" className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="flex items-center gap-2">
+                <FaRobot className="text-indigo-600" />
+                <span>VAPI Private Key</span>
+              </div>
+            </label>
+            <input
+              type="password"
+              id="vapiKey"
+              name="vapiKey"
+              value={formData.vapiKey}
+              onChange={handleInputChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="Enter your VAPI private key"
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaMicrophone, FaBluetooth, FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaMicrophone, FaBluetooth, FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaRobot, FaSpinner } from 'react-icons/fa';
 import { MdBluetooth } from 'react-icons/md';
+import axios from 'axios';
 
 const PermissionsCheck = () => {
   const navigate = useNavigate();
@@ -10,8 +11,11 @@ const PermissionsCheck = () => {
   
   const [microphoneStatus, setMicrophoneStatus] = useState('pending'); // pending, granted, denied
   const [esp32Status, setEsp32Status] = useState('pending'); // pending, connected, failed
+  const [assistantStatus, setAssistantStatus] = useState('pending'); // pending, created, failed
   const [espCharacteristic, setEspCharacteristic] = useState(null);
+  const [assistantId, setAssistantId] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
+  const [isCreatingAssistant, setIsCreatingAssistant] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const childName = queryParams.get("childName") || "";
@@ -20,6 +24,7 @@ const PermissionsCheck = () => {
   const interests = queryParams.get("interests") || "";
   const currentLearning = queryParams.get("currentLearning") || "";
   const porcupineKey = queryParams.get("porcupineKey") || "";
+  const vapiKey = queryParams.get("vapiKey") || localStorage.getItem('vapiKey') || "";
 
   const requestMicrophonePermission = async () => {
     try {
@@ -83,6 +88,59 @@ const PermissionsCheck = () => {
     }
   };
 
+  const createAssistant = async () => {
+    if (!childName || !vapiKey) return;
+    
+    try {
+      setIsCreatingAssistant(true);
+      setErrorMessage('');
+      
+      // Combine interests and current learning into customPrompt
+      const customPrompt = `
+        Child's Interests & Preferences:
+        ${interests}
+
+        Current Learning in School:
+        ${currentLearning}
+      `;
+
+      const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
+        childName,
+        customPrompt,
+        vapiKey
+      });
+      
+      console.log("Assistant created:", response);
+      const newAssistantId = response.data.assistantId;
+      setAssistantId(newAssistantId);
+      setAssistantStatus('created');
+      
+      // Store assistant ID for later use
+      localStorage.setItem('assistantId', newAssistantId);
+      
+    } catch (error) {
+      console.error("Failed to create assistant:", error);
+      setAssistantStatus('failed');
+      
+      if (error.response?.status === 402 || error.response?.data?.message?.includes('credits')) {
+        setErrorMessage('VAPI credits exhausted. Please check your VAPI account and add more credits.');
+      } else if (error.response?.status === 401) {
+        setErrorMessage('Invalid VAPI key. Please check your VAPI private key and try again.');
+      } else {
+        setErrorMessage('Failed to create AI assistant. Please check your VAPI key and try again.');
+      }
+    } finally {
+      setIsCreatingAssistant(false);
+    }
+  };
+
+  // Auto-create assistant when component mounts
+  useEffect(() => {
+    if (childName && vapiKey && assistantStatus === 'pending') {
+      createAssistant();
+    }
+  }, [childName, vapiKey]);
+
   const proceedToVoiceWidget = () => {
     const params = new URLSearchParams({
       childName,
@@ -91,6 +149,7 @@ const PermissionsCheck = () => {
       interests,
       currentLearning,
       porcupineKey,
+      assistantId: assistantId || localStorage.getItem('assistantId') || '',
       isFormSubmitted: 'true'
     });
     
@@ -102,18 +161,19 @@ const PermissionsCheck = () => {
     navigate(`/vapi?${params.toString()}`);
   };
 
-  // const canProceed = microphoneStatus === 'granted' && esp32Status === 'connected';
-  const canProceed = true;
+  const canProceed = microphoneStatus === 'granted' && esp32Status === 'connected' && assistantStatus === 'created';
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'granted':
       case 'connected':
-        return <FaCheckCircle className="text-green-500 text-2xl" />;
+      case 'created':
+        return <FaCheckCircle className="text-green-500 text-xl" />;
       case 'denied':
       case 'failed':
-        return <FaTimesCircle className="text-red-500 text-2xl" />;
+        return <FaTimesCircle className="text-red-500 text-xl" />;
       default:
-        return <FaExclamationTriangle className="text-yellow-500 text-2xl" />;
+        return <FaExclamationTriangle className="text-yellow-500 text-xl" />;
     }
   };
 
@@ -124,42 +184,80 @@ const PermissionsCheck = () => {
         case 'denied': return 'Microphone access denied';
         default: return 'Microphone permission required';
       }
-    } else {
+    } else if (type === 'esp32') {
       switch (status) {
         case 'connected': return 'ESP32 connected successfully';
         case 'failed': return 'ESP32 connection failed';
         default: return 'ESP32 connection required';
       }
+    } else {
+      switch (status) {
+        case 'created': return 'AI assistant created successfully';
+        case 'failed': return 'Failed to create AI assistant';
+        default: return 'Creating AI assistant...';
+      }
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 mb-20 md:mb-0">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] p-4 mb-20 md:mb-0">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
             Setup Your Talkypie
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-gray-600">
             We need a couple of permissions to get {childName}'s Talkypie ready for conversation.
           </p>
         </div>
 
-        <div className="space-y-6">
-          {/* Microphone Permission */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <FaMicrophone className="text-3xl text-blue-600" />
+        <div className="space-y-4">
+          {/* AI Assistant Creation */}
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-200">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <FaRobot className="text-2xl text-indigo-600" />
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Microphone Access</h3>
-                  <p className="text-gray-600">Required for voice conversations</p>
+                  <h3 className="text-lg font-semibold text-gray-900">AI Assistant</h3>
+                  <p className="text-sm text-gray-600">Creating personalized assistant for {childName}</p>
+                </div>
+              </div>
+              {isCreatingAssistant ? (
+                <FaSpinner className="text-indigo-500 text-xl animate-spin" />
+              ) : (
+                getStatusIcon(assistantStatus)
+              )}
+            </div>
+            
+            <p className="text-sm text-gray-700 mb-3">
+              {getStatusText(assistantStatus, 'assistant')}
+            </p>
+            
+            {assistantStatus === 'failed' && (
+              <button
+                onClick={createAssistant}
+                disabled={isCreatingAssistant}
+                className="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                {isCreatingAssistant ? 'Creating Assistant...' : 'Retry Creating Assistant'}
+              </button>
+            )}
+          </div>
+
+          {/* Microphone Permission */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <FaMicrophone className="text-2xl text-blue-600" />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Microphone Access</h3>
+                  <p className="text-sm text-gray-600">Required for voice conversations</p>
                 </div>
               </div>
               {getStatusIcon(microphoneStatus)}
             </div>
             
-            <p className="text-sm text-gray-700 mb-4">
+            <p className="text-sm text-gray-700 mb-3">
               {getStatusText(microphoneStatus, 'microphone')}
             </p>
             
@@ -167,7 +265,7 @@ const PermissionsCheck = () => {
               <button
                 onClick={requestMicrophonePermission}
                 disabled={isChecking}
-                className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
               >
                 {isChecking ? 'Requesting Permission...' : 'Grant Microphone Access'}
               </button>
@@ -176,7 +274,7 @@ const PermissionsCheck = () => {
             {microphoneStatus === 'denied' && (
               <button
                 onClick={requestMicrophonePermission}
-                className="w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-300"
+                className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all duration-300"
               >
                 Try Again
               </button>
@@ -184,19 +282,19 @@ const PermissionsCheck = () => {
           </div>
 
           {/* ESP32 Connection */}
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <MdBluetooth className="text-3xl text-purple-600" />
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <MdBluetooth className="text-2xl text-purple-600" />
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Connect to Talkypie</h3>
-                  <p className="text-gray-600">Bluetooth connection to your device</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Connect to Talkypie</h3>
+                  <p className="text-sm text-gray-600">Bluetooth connection to your device</p>
                 </div>
               </div>
               {getStatusIcon(esp32Status)}
             </div>
             
-            <p className="text-sm text-gray-700 mb-4">
+            <p className="text-sm text-gray-700 mb-3">
               {getStatusText(esp32Status, 'esp32')}
             </p>
             
@@ -204,7 +302,7 @@ const PermissionsCheck = () => {
               <button
                 onClick={connectToESP32}
                 disabled={isChecking}
-                className="w-full py-3 px-4 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                className="w-full py-2 px-4 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
               >
                 {isChecking ? 'Connecting...' : 'Connect to Talkypie'}
               </button>
@@ -213,7 +311,7 @@ const PermissionsCheck = () => {
             {esp32Status === 'failed' && (
               <button
                 onClick={connectToESP32}
-                className="w-full py-3 px-4 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-all duration-300"
+                className="w-full py-2 px-4 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-all duration-300"
               >
                 Try Again
               </button>
@@ -222,20 +320,20 @@ const PermissionsCheck = () => {
 
           {/* Error Message */}
           {errorMessage && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-center gap-3">
-                <FaTimesCircle className="text-red-500 text-xl" />
-                <p className="text-red-700">{errorMessage}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <FaTimesCircle className="text-red-500 text-lg" />
+                <p className="text-red-700 text-sm">{errorMessage}</p>
               </div>
             </div>
           )}
 
           {/* Continue Button */}
-          <div className="pt-4">
+          <div className="pt-3">
             <button
               onClick={proceedToVoiceWidget}
               disabled={!canProceed}
-              className={`w-full py-4 px-6 font-bold rounded-lg text-lg transition-all duration-300 ${
+              className={`w-full py-3 px-6 font-bold rounded-lg text-lg transition-all duration-300 ${
                 canProceed
                   ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 transform hover:scale-105'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -246,8 +344,8 @@ const PermissionsCheck = () => {
           </div>
 
           {/* Help Text */}
-          <div className="text-center pt-4">
-            <p className="text-sm text-gray-500">
+          <div className="text-center pt-2">
+            <p className="text-xs text-gray-500">
               Having trouble? Make sure your Talkypie device is powered on and Bluetooth is enabled on your device.
             </p>
           </div>
