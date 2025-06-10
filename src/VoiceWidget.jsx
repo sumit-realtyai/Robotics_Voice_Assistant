@@ -36,6 +36,7 @@ const VoiceWidget = () => {
   // Get VAPI keys from localStorage or URL params
   const vapiPrivateKey = queryParams.get("vapiKey") || localStorage.getItem('vapiKey') || "";
   const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
+  const prompt = queryParams.get("prompt") || "";
   
   // Initialize VAPI with public key for client SDK
   const vapi = new Vapi(vapiPublicKey);
@@ -119,27 +120,20 @@ const VoiceWidget = () => {
       setAssistantError('');
       stopErrorAudioInterval(); // Stop any previous error audio
       
-      // Combine interests and current learning into customPrompt
-      let customPrompt = '';
-      
-      if (prompt) {
-        // If custom prompt is provided, use it as the main prompt
-        customPrompt = prompt;
-      } else {
-        // Otherwise, build from interests and current learning
-        customPrompt = `
+      let customPrompt = `
           Child's Interests & Preferences:
           ${interests}
 
           Current Learning in School:
           ${currentLearning}
         `;
-      }
+      
 
       const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
         childName,
         customPrompt,
-        vapiKey: vapiPrivateKey
+        vapiKey: vapiPrivateKey,
+        prompt
       });
       
       console.log("Assistant created:", response);
