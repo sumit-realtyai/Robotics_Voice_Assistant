@@ -22,7 +22,8 @@ const PermissionsCheck = () => {
   const porcupineKey = queryParams.get("porcupineKey") || "";
   const vapiKey = queryParams.get("vapiKey") || localStorage.getItem('vapiKey') || "";
   const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
-
+  const prompt = queryParams.get("prompt") || "";
+ 
   const requestMicrophonePermission = async () => {
     try {
       setIsChecking(true);
@@ -95,7 +96,8 @@ const PermissionsCheck = () => {
       porcupineKey,
       vapiKey,
       vapiPublicKey,
-      isFormSubmitted: 'true'
+      isFormSubmitted: 'true',
+      prompt
     });
     
     // Store ESP32 characteristic in sessionStorage for VoiceWidget to use
