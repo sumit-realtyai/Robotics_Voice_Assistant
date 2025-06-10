@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdChildCare, MdSchool } from "react-icons/md";
-import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey, FaStar, FaGraduationCap, FaRobot } from "react-icons/fa";
+import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey, FaStar, FaGraduationCap, FaRobot, FaEdit } from "react-icons/fa";
 
 export default function StartTalkypie() {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ export default function StartTalkypie() {
     gender: "male",
     interests: "",
     currentLearning: "",
+    prompt: "",
     porcupineKey: "",
     vapiKey: "",
     vapiPublicKey: ""
@@ -223,6 +224,42 @@ export default function StartTalkypie() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               />
             </div>
+          </div>
+
+          {/* Custom Prompt Field */}
+          <div className="space-y-2">
+            <label htmlFor="prompt" className="block text-sm font-medium text-gray-700">
+              <div className="flex items-center gap-2">
+                <FaEdit className="text-purple-600" />
+                <span>Custom Prompt (Optional)</span>
+              </div>
+            </label>
+            <div className="bg-purple-50 p-4 rounded-lg mb-2">
+              <div className="flex items-start gap-2 mb-3">
+                <FaEdit className="text-purple-600 text-xl mt-1" />
+                <div>
+                  <h4 className="font-semibold text-purple-900 mb-1">Advanced Customization</h4>
+                  <p className="text-sm text-purple-800">
+                    Add specific instructions or personality traits for the AI assistant. This will override default behavior.
+                  </p>
+                </div>
+              </div>
+              <div className="bg-purple-100 rounded-lg p-3 ml-7">
+                <p className="text-sm text-purple-800 font-medium mb-1">✍ Example:</p>
+                <p className="text-sm text-purple-700">
+                  Always speak in a gentle, encouraging tone. Focus on building confidence and ask open-ended questions to spark creativity.
+                </p>
+              </div>
+            </div>
+            <textarea
+              id="prompt"
+              name="prompt"
+              value={formData.prompt}
+              onChange={handleInputChange}
+              rows="3"
+              placeholder="Enter custom instructions for the AI assistant (optional)..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            />
           </div>
 
           <button

@@ -4,19 +4,21 @@ import { usePorcupine } from "@picovoice/porcupine-react";
 import axios from "axios";
 import Vapi from "@vapi-ai/web";
 import { FiPhoneCall, FiPhoneOff, FiLoader } from "react-icons/fi";
-import { FaRobot, FaExclamationTriangle, FaCheckCircle } from "react-icons/fa";
+import { FaRobot, FaExclamationTriangle, FaCheckCircle, FaVolumeUp } from "react-icons/fa";
 
 const VoiceWidget = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   
   const vapiRef = useRef(null);
+  const errorAudioIntervalRef = useRef(null);
   const [espCharacteristic, setEspCharacteristic] = useState(null);
   const [isAssistantOn, setIsAssistantOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [childName, setChildName] = useState(queryParams.get("childName") || "");
   const [interests, setInterests] = useState(queryParams.get("interests") || "");
   const [currentLearning, setCurrentLearning] = useState(queryParams.get("currentLearning") || "");
+  const [prompt, setPrompt] = useState(queryParams.get("prompt") || "");
   const [porcupineKey, setPorcupineKey] = useState(queryParams.get("porcupineKey") || "");
   const [isFormSubmitted, setIsFormSubmitted] = useState(queryParams.get("isFormSubmitted") === "true");
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
@@ -63,26 +65,76 @@ const VoiceWidget = () => {
     isAssistantOnRef.current = isAssistantOn;
   }, [isAssistantOn]);
 
+  // Function to play error audio
+  const playErrorAudio = (errorMessage) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(errorMessage);
+      utterance.rate = 0.8;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Function to start error audio interval
+  const startErrorAudioInterval = (errorMessage) => {
+    // Clear any existing interval
+    if (errorAudioIntervalRef.current) {
+      clearInterval(errorAudioIntervalRef.current);
+    }
+
+    // Play immediately
+    playErrorAudio(errorMessage);
+
+    // Set up interval to play every 10 seconds
+    errorAudioIntervalRef.current = setInterval(() => {
+      playErrorAudio(errorMessage);
+    }, 10000);
+  };
+
+  // Function to stop error audio interval
+  const stopErrorAudioInterval = () => {
+    if (errorAudioIntervalRef.current) {
+      clearInterval(errorAudioIntervalRef.current);
+      errorAudioIntervalRef.current = null;
+    }
+    // Stop any ongoing speech
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+  };
+
   // Create assistant when component mounts
   const createAssistant = async () => {
     if (!childName || !vapiPrivateKey) {
       setAssistantStatus('failed');
-      setAssistantError('Missing required information for assistant creation.');
+      const errorMsg = 'Missing required information for assistant creation.';
+      setAssistantError(errorMsg);
+      startErrorAudioInterval(errorMsg);
       return;
     }
     
     try {
       setIsCreatingAssistant(true);
       setAssistantError('');
+      stopErrorAudioInterval(); // Stop any previous error audio
       
       // Combine interests and current learning into customPrompt
-      const customPrompt = `
-        Child's Interests & Preferences:
-        ${interests}
+      let customPrompt = '';
+      
+      if (prompt) {
+        // If custom prompt is provided, use it as the main prompt
+        customPrompt = prompt;
+      } else {
+        // Otherwise, build from interests and current learning
+        customPrompt = `
+          Child's Interests & Preferences:
+          ${interests}
 
-        Current Learning in School:
-        ${currentLearning}
-      `;
+          Current Learning in School:
+          ${currentLearning}
+        `;
+      }
 
       const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
         childName,
@@ -102,13 +154,17 @@ const VoiceWidget = () => {
       console.error("Failed to create assistant:", error);
       setAssistantStatus('failed');
       
+      let errorMsg = '';
       if (error.response?.status === 402 || error.response?.data?.message?.includes('credits')) {
-        setAssistantError('VAPI credits exhausted. Please check your VAPI account and add more credits.');
+        errorMsg = 'VAPI credits exhausted. Please check your VAPI account and add more credits.';
       } else if (error.response?.status === 401) {
-        setAssistantError('Invalid VAPI private key. Please check your VAPI private key and try again.');
+        errorMsg = 'Invalid VAPI private key. Please check your VAPI private key and try again.';
       } else {
-        setAssistantError('Failed to create AI assistant. Please check your VAPI private key and try again.');
+        errorMsg = 'Failed to create AI assistant. Please check your VAPI private key and try again.';
       }
+      
+      setAssistantError(errorMsg);
+      startErrorAudioInterval(errorMsg);
     } finally {
       setIsCreatingAssistant(false);
     }
@@ -120,6 +176,13 @@ const VoiceWidget = () => {
       createAssistant();
     }
   }, [isFormSubmitted, childName, vapiPrivateKey]);
+
+  // Cleanup error audio interval on component unmount
+  useEffect(() => {
+    return () => {
+      stopErrorAudioInterval();
+    };
+  }, []);
 
   const connectToESP32 = async () => {
     try {
@@ -387,6 +450,7 @@ useEffect(() => {
   const retryCreateAssistant = () => {
     setAssistantStatus('pending');
     setAssistantError('');
+    stopErrorAudioInterval(); // Stop error audio when retrying
     createAssistant();
   };
 
@@ -430,6 +494,10 @@ useEffect(() => {
           </div>
           <h2 className="text-2xl font-bold text-gray-900">Assistant Setup Failed</h2>
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <FaVolumeUp className="text-red-500" />
+              <p className="text-red-700 text-sm font-medium">Audio Error Notifications Active</p>
+            </div>
             <p className="text-red-700 text-sm">{assistantError}</p>
           </div>
           <button
@@ -438,6 +506,12 @@ useEffect(() => {
             className="w-full py-3 px-4 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
           >
             {isCreatingAssistant ? 'Retrying...' : 'Retry Setup'}
+          </button>
+          <button
+            onClick={stopErrorAudioInterval}
+            className="w-full py-2 px-4 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
+          >
+            Stop Audio Notifications
           </button>
         </div>
       </div>
