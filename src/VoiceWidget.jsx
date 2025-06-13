@@ -6,6 +6,9 @@ import Vapi from "@vapi-ai/web";
 import { FiPhoneCall, FiPhoneOff, FiLoader } from "react-icons/fi";
 import { FaRobot, FaExclamationTriangle, FaCheckCircle, FaVolumeUp } from "react-icons/fa";
 
+
+  // will initialize Vapi instance once assistant is created
+  let  vapi ;
 const VoiceWidget = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -38,8 +41,7 @@ const VoiceWidget = () => {
   const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
   
   
-  // Initialize VAPI with public key for client SDK
-  const vapi = new Vapi(vapiPublicKey);
+
 
   const {
     keywordDetection,
@@ -138,9 +140,14 @@ const VoiceWidget = () => {
       
       console.log("Assistant created:", response);
       const newAssistantId = response.data.assistantId;
+
+        // Initialize VAPI with public key for client SDK
+         vapi = new Vapi(vapiPublicKey);
       setAssistantId(newAssistantId);
       setAssistantStatus('created');
       
+
+
       // Store assistant ID for later use
       localStorage.setItem('assistantId', newAssistantId);
       

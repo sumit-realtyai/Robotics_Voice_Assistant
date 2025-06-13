@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { MdChildCare, MdSchool } from "react-icons/md";
 import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey, FaStar, FaGraduationCap, FaRobot, FaEdit } from "react-icons/fa";
@@ -17,12 +17,28 @@ export default function StartTalkypie() {
     vapiPublicKey: ""
   });
 
+  // Load VAPI keys from localStorage on component mount
+  useEffect(() => {
+    const storedVapiKey = localStorage.getItem('vapiKey');
+    const storedVapiPublicKey = localStorage.getItem('vapiPublicKey');
+    
+    if (storedVapiKey && storedVapiPublicKey) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        vapiKey: storedVapiKey,
+        vapiPublicKey: storedVapiPublicKey,
+        porcupineKey: storedPorcupineKey
+      }));
+    }
+  }, []);
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     
     // Store VAPI keys in localStorage
     localStorage.setItem('vapiKey', formData.vapiKey);
     localStorage.setItem('vapiPublicKey', formData.vapiPublicKey);
+    localStorage.setItem('porcupineKey', formData.porcupineKey);
     
     const queryParams = new URLSearchParams({
       ...formData,

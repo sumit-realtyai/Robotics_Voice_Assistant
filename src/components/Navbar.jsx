@@ -24,7 +24,7 @@ const Navbar = () => {
               className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
             >
               <MdDashboard className="text-xl" />
-              <span>Start Talkypie</span>
+              <span>Parent Talkypie app</span>
             </Link>
             <Link
               to="/sessions"
