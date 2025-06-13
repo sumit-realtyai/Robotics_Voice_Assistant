@@ -27,7 +27,7 @@ export default function StartTalkypie() {
         ...prevFormData,
         vapiKey: storedVapiKey,
         vapiPublicKey: storedVapiPublicKey,
-        porcupineKey: storedPorcupineKey
+        
       }));
     }
   }, []);
