@@ -146,7 +146,7 @@ const VoiceWidget = () => {
       setAssistantId(newAssistantId);
       setAssistantStatus('created');
       
-
+      toggleAssistant(); // Start assistant immediately after creation
 
       // Store assistant ID for later use
       localStorage.setItem('assistantId', newAssistantId);
