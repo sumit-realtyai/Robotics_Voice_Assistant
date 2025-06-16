@@ -174,7 +174,7 @@ const VoiceWidget = () => {
 
 useEffect(() => {
   if (assistantId && assistantStatus === 'created') {
-    toggleAssistant();
+    toggleAssistant(); // Start the assistant if it was created successfully
   }
 }, [assistantId, assistantStatus]);
 
