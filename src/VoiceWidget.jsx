@@ -172,6 +172,13 @@ const VoiceWidget = () => {
     }
   };
 
+useEffect(() => {
+  if (assistantId && assistantStatus === 'created') {
+    toggleAssistant();
+  }
+}, [assistantId, assistantStatus]);
+
+  
   // Auto-create assistant when component mounts
   useEffect(() => {
     if (isFormSubmitted && childName && vapiPrivateKey && assistantStatus === 'pending') {
