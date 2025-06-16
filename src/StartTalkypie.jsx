@@ -1,7 +1,7 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdChildCare, MdSchool } from "react-icons/md";
-import { FaBookReader, FaTheaterMasks, FaBrain, FaHeart, FaKey, FaStar, FaGraduationCap, FaRobot, FaEdit } from "react-icons/fa";
+import { MdChildCare } from "react-icons/md";
+import { FaStar, FaGraduationCap, FaEdit } from "react-icons/fa";
 
 export default function StartTalkypie() {
   const navigate = useNavigate();
@@ -11,39 +11,34 @@ export default function StartTalkypie() {
     gender: "male",
     interests: "",
     currentLearning: "",
-    prompt: "",
-    porcupineKey: "",
-    vapiKey: "",
-    vapiPublicKey: ""
+    prompt: ""
   });
-
-  // Load VAPI keys from localStorage on component mount
-  useEffect(() => {
-    const storedVapiKey = localStorage.getItem('vapiKey');
-    const storedVapiPublicKey = localStorage.getItem('vapiPublicKey');
-    
-    if (storedVapiKey && storedVapiPublicKey) {
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        vapiKey: storedVapiKey,
-        vapiPublicKey: storedVapiPublicKey,
-        
-      }));
-    }
-  }, []);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     
-    // Store VAPI keys in localStorage
-    localStorage.setItem('vapiKey', formData.vapiKey);
-    localStorage.setItem('vapiPublicKey', formData.vapiPublicKey);
-    localStorage.setItem('porcupineKey', formData.porcupineKey);
+    // Get keys from localStorage (managed in Settings)
+    const porcupineKey = localStorage.getItem('porcupineKey') || '';
+    const vapiKey = localStorage.getItem('vapiKey') || '';
+    const vapiPublicKey = localStorage.getItem('vapiPublicKey') || '';
+    const toyName = localStorage.getItem('toyName') || 'Talkypie';
+    
+    // Check if required keys are available
+    if (!porcupineKey || !vapiKey || !vapiPublicKey) {
+      alert('Please configure your API keys in Settings before starting.');
+      navigate('/settings');
+      return;
+    }
     
     const queryParams = new URLSearchParams({
       ...formData,
+      porcupineKey,
+      vapiKey,
+      vapiPublicKey,
+      toyName,
       isFormSubmitted: true
     }).toString();
+    
     navigate(`/permissions?${queryParams}`);
   };
 
@@ -97,83 +92,22 @@ export default function StartTalkypie() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
-                Gender
-              </label>
-              <select
-                id="gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="porcupineKey" className="block text-sm font-medium text-gray-700 mb-1">
-                <div className="flex items-center gap-2">
-                  <FaKey className="text-yellow-600" />
-                  <span>Porcupine Key</span>
-                </div>
-              </label>
-              <input
-                type="text"
-                id="porcupineKey"
-                name="porcupineKey"
-                value={formData.porcupineKey}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter your Porcupine access key"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="vapiKey" className="block text-sm font-medium text-gray-700 mb-1">
-                <div className="flex items-center gap-2">
-                  <FaRobot className="text-indigo-600" />
-                  <span>VAPI Private Key</span>
-                </div>
-              </label>
-              <input
-                type="password"
-                id="vapiKey"
-                name="vapiKey"
-                value={formData.vapiKey}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter your VAPI private key"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="vapiPublicKey" className="block text-sm font-medium text-gray-700 mb-1">
-                <div className="flex items-center gap-2">
-                  <FaRobot className="text-green-600" />
-                  <span>VAPI Public Key</span>
-                </div>
-              </label>
-              <input
-                type="text"
-                id="vapiPublicKey"
-                name="vapiPublicKey"
-                value={formData.vapiPublicKey}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter your VAPI public key"
-              />
-            </div>
+          <div>
+            <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+              Gender
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              value={formData.gender}
+              onChange={handleInputChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -23,6 +23,7 @@ const VoiceWidget = () => {
   const [currentLearning, setCurrentLearning] = useState(queryParams.get("currentLearning") || "");
   const [prompt, setPrompt] = useState(queryParams.get("prompt") || "");
   const [porcupineKey, setPorcupineKey] = useState(queryParams.get("porcupineKey") || "");
+  const [toyName, setToyName] = useState(queryParams.get("toyName") || "Talkypie");
   const [isFormSubmitted, setIsFormSubmitted] = useState(queryParams.get("isFormSubmitted") === "true");
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
   const [assistantId, setAssistantId] = useState(null);
@@ -135,7 +136,8 @@ const VoiceWidget = () => {
         childName,
         customPrompt,
         vapiKey: vapiPrivateKey,
-        prompt
+        prompt,
+        toyName
       });
       
       console.log("Assistant created:", response);
@@ -146,7 +148,6 @@ const VoiceWidget = () => {
       setAssistantId(newAssistantId);
       setAssistantStatus('created');
       
-      toggleAssistant(); // Start assistant immediately after creation
 
       // Store assistant ID for later use
       localStorage.setItem('assistantId', newAssistantId);
@@ -469,7 +470,7 @@ useEffect(() => {
           </div>
           <h2 className="text-2xl font-bold text-gray-900">Setting up your AI Assistant</h2>
           <p className="text-gray-600">
-            Creating a personalized assistant for {childName}...
+            Creating a personalized assistant for {childName} with {toyName}...
           </p>
           <div className="bg-indigo-50 rounded-lg p-4">
             <div className="flex items-center gap-3">
@@ -527,7 +528,7 @@ useEffect(() => {
           <div className="flex items-center gap-2">
             <FaCheckCircle className="text-green-500 text-lg" />
             <p className="text-green-700 text-sm font-medium">
-              AI Assistant ready for {childName}!
+              {toyName} AI Assistant ready for {childName}!
             </p>
           </div>
         </div>
