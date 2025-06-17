@@ -39,7 +39,7 @@ const VoiceWidget = () => {
 
   // Get VAPI keys from localStorage or URL params
   const vapiPrivateKey = queryParams.get("vapiKey") || localStorage.getItem('vapiKey') || "";
-  const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
+  const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "57bd3c84-dd46-41ce-82ab-2bbe48163d90";
   
   
 

@@ -24,8 +24,8 @@ export default function StartTalkypie() {
     const toyName = localStorage.getItem('toyName') || 'Talkypie';
     
     // Check if required keys are available
-    if (!porcupineKey || !vapiKey || !vapiPublicKey) {
-      alert('Please configure your API keys in Settings before starting.');
+    if (!porcupineKey ) {
+      alert('Please configure atleast Porcupine API keys in Settings before starting.');
       navigate('/settings');
       return;
     }
