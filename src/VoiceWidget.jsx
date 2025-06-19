@@ -4,45 +4,63 @@ import { usePorcupine } from "@picovoice/porcupine-react";
 import axios from "axios";
 import Vapi from "@vapi-ai/web";
 import { FiPhoneCall, FiPhoneOff, FiLoader } from "react-icons/fi";
-import { FaRobot, FaExclamationTriangle, FaCheckCircle, FaVolumeUp } from "react-icons/fa";
+import {
+  FaRobot,
+  FaExclamationTriangle,
+  FaCheckCircle,
+  FaVolumeUp,
+} from "react-icons/fa";
 
-
-  // will initialize Vapi instance once assistant is created
-  let  vapi ;
+// will initialize Vapi instance once assistant is created
+let vapi;
 const VoiceWidget = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  
+
   const vapiRef = useRef(null);
   const errorAudioIntervalRef = useRef(null);
   const [espCharacteristic, setEspCharacteristic] = useState(null);
   const [isAssistantOn, setIsAssistantOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [childName, setChildName] = useState(queryParams.get("childName") || "");
-  const [interests, setInterests] = useState(queryParams.get("interests") || "");
-  const [currentLearning, setCurrentLearning] = useState(queryParams.get("currentLearning") || "");
+  const [childName, setChildName] = useState(
+    queryParams.get("childName") || ""
+  );
+  const [interests, setInterests] = useState(
+    queryParams.get("interests") || ""
+  );
+  const [currentLearning, setCurrentLearning] = useState(
+    queryParams.get("currentLearning") || ""
+  );
   const [prompt, setPrompt] = useState(queryParams.get("prompt") || "");
-  const [porcupineKey, setPorcupineKey] = useState(queryParams.get("porcupineKey") || "");
-  const [toyName, setToyName] = useState(queryParams.get("toyName") || "Talkypie");
-  const [isFormSubmitted, setIsFormSubmitted] = useState(queryParams.get("isFormSubmitted") === "true");
+  const [porcupineKey, setPorcupineKey] = useState(
+    queryParams.get("porcupineKey") || ""
+  );
+  const [toyName, setToyName] = useState(
+    queryParams.get("toyName") || "Talkypie"
+  );
+  const [isFormSubmitted, setIsFormSubmitted] = useState(
+    queryParams.get("isFormSubmitted") === "true"
+  );
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
   const [assistantId, setAssistantId] = useState(null);
   const [mediaDetection, setMediaDetect] = useState(false);
-  
+
   // Assistant creation states
-  const [assistantStatus, setAssistantStatus] = useState('pending'); // pending, created, failed
+  const [assistantStatus, setAssistantStatus] = useState("pending"); // pending, created, failed
   const [isCreatingAssistant, setIsCreatingAssistant] = useState(false);
-  const [assistantError, setAssistantError] = useState('');
-  
+  const [assistantError, setAssistantError] = useState("");
+
   const isAssistantOnRef = useRef(isAssistantOn);
   const inactivityTimeoutRef = useRef(null);
 
   // Get VAPI keys from localStorage or URL params
-  const vapiPrivateKey = queryParams.get("vapiKey") || localStorage.getItem('vapiKey') || "";
-  const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "57bd3c84-dd46-41ce-82ab-2bbe48163d90";
-  
-  
-
+  const vapiPrivateKey =
+    queryParams.get("vapiKey") || localStorage.getItem("vapiKey") || "";
+  const vapiPublicKey =
+    queryParams.get("vapiPublicKey") ||
+    localStorage.getItem("vapiPublicKey") ||
+    "57bd3c84-dd46-41ce-82ab-2bbe48163d90";
+  const supportBtnRef = useRef(null); // for esp button
 
   const {
     keywordDetection,
@@ -71,7 +89,7 @@ const VoiceWidget = () => {
 
   // Function to play error audio
   const playErrorAudio = (errorMessage) => {
-    if ('speechSynthesis' in window) {
+    if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(errorMessage);
       utterance.rate = 0.8;
       utterance.pitch = 1;
@@ -103,7 +121,7 @@ const VoiceWidget = () => {
       errorAudioIntervalRef.current = null;
     }
     // Stop any ongoing speech
-    if ('speechSynthesis' in window) {
+    if ("speechSynthesis" in window) {
       speechSynthesis.cancel();
     }
   };
@@ -111,18 +129,18 @@ const VoiceWidget = () => {
   // Create assistant when component mounts
   const createAssistant = async () => {
     if (!childName || !vapiPrivateKey) {
-      setAssistantStatus('failed');
-      const errorMsg = 'Missing required information for assistant creation.';
+      setAssistantStatus("failed");
+      const errorMsg = "Missing required information for assistant creation.";
       setAssistantError(errorMsg);
       startErrorAudioInterval(errorMsg);
       return;
     }
-    
+
     try {
       setIsCreatingAssistant(true);
-      setAssistantError('');
+      setAssistantError("");
       stopErrorAudioInterval(); // Stop any previous error audio
-      
+
       let customPrompt = `
           Child's Interests & Preferences:
           ${interests}
@@ -130,41 +148,47 @@ const VoiceWidget = () => {
           Current Learning in School:
           ${currentLearning}
         `;
-      
 
-      const response = await axios.post("https://api-talkypies.vercel.app/vapi/create-assistant", {
-        childName,
-        customPrompt,
-        vapiKey: vapiPrivateKey,
-        prompt,
-        toyName
-      });
-      
+      const response = await axios.post(
+        "https://api-talkypies.vercel.app/vapi/create-assistant",
+        {
+          childName,
+          customPrompt,
+          vapiKey: vapiPrivateKey,
+          prompt,
+          toyName,
+        }
+      );
+
       console.log("Assistant created:", response);
       const newAssistantId = response.data.assistantId;
 
-        // Initialize VAPI with public key for client SDK
-         vapi = new Vapi(vapiPublicKey);
+      // Initialize VAPI with public key for client SDK
+      vapi = new Vapi(vapiPublicKey);
       setAssistantId(newAssistantId);
-      setAssistantStatus('created');
-      
+      setAssistantStatus("created");
 
       // Store assistant ID for later use
-      localStorage.setItem('assistantId', newAssistantId);
-      
+      localStorage.setItem("assistantId", newAssistantId);
     } catch (error) {
       console.error("Failed to create assistant:", error);
-      setAssistantStatus('failed');
-      
-      let errorMsg = '';
-      if (error.response?.status === 402 || error.response?.data?.message?.includes('credits')) {
-        errorMsg = 'VAPI credits exhausted. Please check your VAPI account and add more credits.';
+      setAssistantStatus("failed");
+
+      let errorMsg = "";
+      if (
+        error.response?.status === 402 ||
+        error.response?.data?.message?.includes("credits")
+      ) {
+        errorMsg =
+          "VAPI credits exhausted. Please check your VAPI account and add more credits.";
       } else if (error.response?.status === 401) {
-        errorMsg = 'Invalid VAPI private key. Please check your VAPI private key and try again.';
+        errorMsg =
+          "Invalid VAPI private key. Please check your VAPI private key and try again.";
       } else {
-        errorMsg = 'Failed to create AI assistant. Please check your VAPI private key and try again.';
+        errorMsg =
+          "Failed to create AI assistant. Please check your VAPI private key and try again.";
       }
-      
+
       setAssistantError(errorMsg);
       startErrorAudioInterval(errorMsg);
     } finally {
@@ -172,16 +196,29 @@ const VoiceWidget = () => {
     }
   };
 
-useEffect(() => {
-  if (assistantId && assistantStatus === 'created') {
-    toggleAssistant(); // Start the assistant if it was created successfully
-  }
-}, [assistantId, assistantStatus]);
+  useEffect(() => {
+    if (assistantId && assistantStatus === "created") {
+      //Light on function
+      const lightOn = async () => {
+        console.log("Intro audio finished. Connecting to Eva...");
+        await sendBlinkCommand();
+        // await new Promise(resolve => setTimeout(resolve, 5000));
+        toggleAssistant(); // Start the assistant if it was created successfully
+      };
+      lightOn();
 
-  
+       
+    }
+  }, [assistantId, assistantStatus]);
+
   // Auto-create assistant when component mounts
   useEffect(() => {
-    if (isFormSubmitted && childName && vapiPrivateKey && assistantStatus === 'pending') {
+    if (
+      isFormSubmitted &&
+      childName &&
+      vapiPrivateKey &&
+      assistantStatus === "pending"
+    ) {
       createAssistant();
     }
   }, [isFormSubmitted, childName, vapiPrivateKey]);
@@ -196,18 +233,27 @@ useEffect(() => {
   const connectToESP32 = async () => {
     try {
       const device = await navigator.bluetooth.requestDevice({
-        filters: [{ name: "ESP32-Blinker" }],
-        optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"],
+        filters: [{ name: "Blinker_1" }],
+        optionalServices: ["2fe3c548-43cf-4fa0-b3b4-67278f0e3e7c"],
       });
 
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService(
-        "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+        "2fe3c548-43cf-4fa0-b3b4-67278f0e3e7c"
       );
       const char = await service.getCharacteristic(
-        "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+        "2fe3c549-43cf-4fa0-b3b4-67278f0e3e7c"
       );
 
+      await char.startNotifications(); // ✅ Enable notifications
+
+      char.addEventListener("characteristicvaluechanged", (event) => {
+        const value = new TextDecoder().decode(event.target.value);
+        console.log("Received from ESP:", value);
+        if (value === "SUPPORT") {
+          supportBtnRef.current?.click(); // ✅ Trigger button press
+        }
+      });
       setEspCharacteristic(char);
       console.log("ESP32 connected.");
     } catch (err) {
@@ -257,42 +303,42 @@ useEffect(() => {
       audio.play();
       audio.onended = () => {
         console.log("stop assistant & offCMD after disconnect audio");
-        
+
         toggleAssistant();
       };
     }, 1000);
   };
 
   useEffect(() => {
-    if (isFormSubmitted && assistantStatus === 'created') {
-      init(
-        porcupineKey,
-        porcupineKeyword,
-        porcupineModel
-      ).then(() => {
-        start();
-      }).catch((err) => {
-        console.error("Error initializing Porcupine:", err);  
-      });
+    if (isFormSubmitted && assistantStatus === "created") {
+      init(porcupineKey, porcupineKeyword, porcupineModel)
+        .then(() => {
+          start();
+        })
+        .catch((err) => {
+          console.error("Error initializing Porcupine:", err);
+        });
     }
     return () => release();
   }, [init, start, release, isFormSubmitted, porcupineKey, assistantStatus]);
 
   useEffect(() => {
-    if (!isFormSubmitted || assistantStatus !== 'created') return;
-  console.log("assistant: ", isAssistantOn);
-  console.log("wakeWordDetected: ", wakeWordDetected);
-  console.log("mediaDetection: ", mediaDetection);
-  console.log("isFormSubmitted: ", isFormSubmitted);
-  console.log("line 11111111111111");
+    if (!isFormSubmitted || assistantStatus !== "created") return;
+    console.log("assistant: ", isAssistantOn);
+    console.log("wakeWordDetected: ", wakeWordDetected);
+    console.log("mediaDetection: ", mediaDetection);
+    console.log("isFormSubmitted: ", isFormSubmitted);
+    console.log("line 11111111111111");
     const audio = new Audio("/wake up.mp3");
-      let intervalId = null;
+    let intervalId = null;
 
-if ((mediaDetection || wakeWordDetected || isAssistantOn) ) {
+    if (mediaDetection || wakeWordDetected || isAssistantOn) {
       console.log("line 777777777777777777777777777777777777777777");
       console.log("line 8888888888888888888888888888");
       audio.currentTime = 0;
-      console.log("Wake word detected or user manually started vapi — paused audio immediately.");
+      console.log(
+        "Wake word detected or user manually started vapi — paused audio immediately."
+      );
       clearInterval(intervalId);
       return;
     }
@@ -300,10 +346,9 @@ if ((mediaDetection || wakeWordDetected || isAssistantOn) ) {
     audio.loop = false;
     console.log("line 22222222222222");
     audio.play().catch((e) => {
-        console.warn("Audio play failed:", e);
-      });
-      console.log("line 33333333333333");
-    
+      console.warn("Audio play failed:", e);
+    });
+    console.log("line 33333333333333");
 
     const playAudio = () => {
       if (!audio.paused) return;
@@ -333,18 +378,27 @@ if ((mediaDetection || wakeWordDetected || isAssistantOn) ) {
         console.log("line 10000000000000000000000000000");
       }
     };
-
-  }, [isFormSubmitted, wakeWordDetected, mediaDetection, isAssistantOn, assistantStatus]);
-
-useEffect(() => {
-  if (keywordDetection) {
-        console.log("Wake word detected:", keywordDetection.label);
-        setWakeWordDetected(true);
-      }
-},[keywordDetection]);
+  }, [
+    isFormSubmitted,
+    wakeWordDetected,
+    mediaDetection,
+    isAssistantOn,
+    assistantStatus,
+  ]);
 
   useEffect(() => {
-    if ((mediaDetection || wakeWordDetected) && isFormSubmitted && assistantStatus === 'created') {
+    if (keywordDetection) {
+      console.log("Wake word detected:", keywordDetection.label);
+      setWakeWordDetected(true);
+    }
+  }, [keywordDetection]);
+
+  useEffect(() => {
+    if (
+      (mediaDetection || wakeWordDetected) &&
+      isFormSubmitted &&
+      assistantStatus === "created"
+    ) {
       if (isAssistantOnRef.current) {
         console.log("Assistant is already on, no need to start again.");
         return;
@@ -398,7 +452,10 @@ useEffect(() => {
         const data = JSON.parse(event.data);
         console.log("Parsed data from backend:", data);
 
-        if (data.type === "MEDIA_KEY" && data.message.toLowerCase().includes("next")) {
+        if (
+          data.type === "MEDIA_KEY" &&
+          data.message.toLowerCase().includes("next")
+        ) {
           setMediaDetect(true);
         }
       } catch (err) {
@@ -428,11 +485,16 @@ useEffect(() => {
       setIsLoading(false);
       setIsAssistantOn(true);
       vapi.once("call-end", () => {
-        console.log("Call ended event received", isAssistantOn, "  ", isAssistantOnRef.current);
-        if(isAssistantOnRef.current) {
-        resetInactivityTimer();
+        console.log(
+          "Call ended event received",
+          isAssistantOn,
+          "  ",
+          isAssistantOnRef.current
+        );
+        if (isAssistantOnRef.current) {
+          resetInactivityTimer();
         }
-      })
+      });
     } catch (error) {
       console.error("Error starting call:", error);
       setIsLoading(false);
@@ -452,30 +514,33 @@ useEffect(() => {
       setWakeWordDetected(false);
       setMediaDetect(false);
     } else {
+      await sendOnCommand();
       startVapiAssistant();
     }
   };
 
   const retryCreateAssistant = () => {
-    setAssistantStatus('pending');
-    setAssistantError('');
+    setAssistantStatus("pending");
+    setAssistantError("");
     stopErrorAudioInterval(); // Stop error audio when retrying
     createAssistant();
   };
 
   if (error) {
-     <div>Error initializing Porcupine: {error.message}</div>;
+    <div>Error initializing Porcupine: {error.message}</div>;
   }
 
   // Show loading state while creating assistant
-  if (assistantStatus === 'pending' || isCreatingAssistant) {
+  if (assistantStatus === "pending" || isCreatingAssistant) {
     return (
       <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl mb-20 md:mb-0">
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center">
             <FiLoader className="w-12 h-12 text-indigo-600 animate-spin" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Setting up your AI Assistant</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Setting up your AI Assistant
+          </h2>
           <p className="text-gray-600">
             Creating a personalized assistant for {childName} with {toyName}...
           </p>
@@ -483,8 +548,12 @@ useEffect(() => {
             <div className="flex items-center gap-3">
               <FaRobot className="text-2xl text-indigo-600" />
               <div className="text-left">
-                <p className="font-semibold text-indigo-900">Personalizing Experience</p>
-                <p className="text-sm text-indigo-700">This may take a few moments</p>
+                <p className="font-semibold text-indigo-900">
+                  Personalizing Experience
+                </p>
+                <p className="text-sm text-indigo-700">
+                  This may take a few moments
+                </p>
               </div>
             </div>
           </div>
@@ -494,18 +563,22 @@ useEffect(() => {
   }
 
   // Show error state if assistant creation failed
-  if (assistantStatus === 'failed') {
+  if (assistantStatus === "failed") {
     return (
       <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl mb-20 md:mb-0">
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center">
             <FaExclamationTriangle className="w-12 h-12 text-red-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Assistant Setup Failed</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Assistant Setup Failed
+          </h2>
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
               <FaVolumeUp className="text-red-500" />
-              <p className="text-red-700 text-sm font-medium">Audio Error Notifications Active</p>
+              <p className="text-red-700 text-sm font-medium">
+                Audio Error Notifications Active
+              </p>
             </div>
             <p className="text-red-700 text-sm">{assistantError}</p>
           </div>
@@ -514,7 +587,7 @@ useEffect(() => {
             disabled={isCreatingAssistant}
             className="w-full py-3 px-4 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
           >
-            {isCreatingAssistant ? 'Retrying...' : 'Retry Setup'}
+            {isCreatingAssistant ? "Retrying..." : "Retry Setup"}
           </button>
           <button
             onClick={stopErrorAudioInterval}
@@ -570,6 +643,7 @@ useEffect(() => {
 
         <div className="flex justify-center">
           <button
+            ref={supportBtnRef} // ✅ ADD THIS LINE
             onClick={toggleAssistant}
             className={`rounded-full p-4 text-white shadow-lg transition-transform duration-300 ease-in-out ${
               isAssistantOn
@@ -587,6 +661,14 @@ useEffect(() => {
             ) : (
               <FiPhoneCall className="w-8 h-8 animate-pulse" />
             )}
+          </button>
+
+          <button
+            onClick={connectToESP32}
+            type="submit"
+            className="w-full py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition duration-300"
+          >
+            connect to ESP32
           </button>
         </div>
       </div>
