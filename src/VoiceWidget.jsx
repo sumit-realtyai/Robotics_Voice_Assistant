@@ -87,6 +87,42 @@ const VoiceWidget = () => {
     isAssistantOnRef.current = isAssistantOn;
   }, [isAssistantOn]);
 
+  // Setup ESP32 characteristic and event listener
+  useEffect(() => {
+    // Get ESP32 characteristic from global storage
+    if (window.esp32Characteristic) {
+      setEspCharacteristic(window.esp32Characteristic);
+      
+      // Add event listener for ESP32 characteristic value changes
+      const handleCharacteristicValueChanged = (event) => {
+        const value = new TextDecoder().decode(event.target.value);
+        console.log("Received from ESP:", value);
+        if (value === "SUPPORT") {
+          console.log("ESP32 SUPPORT signal received, toggling assistant");
+          toggleAssistant();
+        }
+      };
+
+      // Enable notifications and add event listener
+      window.esp32Characteristic.startNotifications().then(() => {
+        window.esp32Characteristic.addEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
+        console.log("ESP32 characteristic event listener added");
+      }).catch(err => {
+        console.error("Failed to start ESP32 notifications:", err);
+      });
+
+      // Cleanup function
+      return () => {
+        if (window.esp32Characteristic) {
+          window.esp32Characteristic.removeEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
+          console.log("ESP32 characteristic event listener removed");
+        }
+      };
+    } else {
+      console.log("ESP32 characteristic not available in global storage");
+    }
+  }, []);
+
   // Function to play error audio
   const playErrorAudio = (errorMessage) => {
     if ("speechSynthesis" in window) {
@@ -608,6 +644,16 @@ const VoiceWidget = () => {
               {wakeWordDetected
                 ? "Detected! Vapi is ready."
                 : "Waiting for 'Hi Eva'..."}
+            </span>
+          </p>
+          <p className="text-gray-700">
+            ESP32 Connection:{" "}
+            <span
+              className={`font-semibold ${
+                espCharacteristic ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {espCharacteristic ? "Connected & Listening" : "Not Connected"}
             </span>
           </p>
         </div>

@@ -23,7 +23,7 @@ const PermissionsCheck = () => {
   const vapiKey = queryParams.get("vapiKey") || localStorage.getItem('vapiKey') || "";
   const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
   const prompt = queryParams.get("prompt") || "";
-  const toyName = queryParams.get('toyName') ;
+  const toyName = queryParams.get('toyName');
  
   const requestMicrophonePermission = async () => {
     try {
@@ -66,9 +66,13 @@ const PermissionsCheck = () => {
         "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
       );
 
+      // Store characteristic globally for use in other components
+      window.esp32Characteristic = char;
+      sessionStorage.setItem('esp32Connected', 'true');
+      
       setEspCharacteristic(char);
       setEsp32Status('connected');
-      console.log("ESP32 connected successfully");
+      console.log("ESP32 connected successfully, characteristic stored globally");
     } catch (error) {
       console.error("ESP32 connection failed:", error);
       setEsp32Status('failed');
@@ -101,11 +105,6 @@ const PermissionsCheck = () => {
       prompt,
       toyName,
     });
-    
-    // Store ESP32 characteristic in sessionStorage for VoiceWidget to use
-    if (espCharacteristic) {
-      sessionStorage.setItem('esp32Connected', 'true');
-    }
     
     navigate(`/vapi?${params.toString()}`);
   };
