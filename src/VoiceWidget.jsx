@@ -10,8 +10,11 @@ import {
   FaCheckCircle,
   FaVolumeUp,
   FaWifi,
-  FaWifiSlash,
+  
+   
 } from "react-icons/fa";
+// Corrected:
+import { MdWifiOff } from "react-icons/md"; // ✅ correct package
 import { useESP32 } from "./contexts/ESP32Context";
 
 // will initialize Vapi instance once assistant is created
@@ -545,7 +548,7 @@ const VoiceWidget = () => {
       <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl mb-20 md:mb-0">
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center">
-            <FaWifiSlash className="w-12 h-12 text-red-500" />
+            <MdWifiOff className="w-12 h-12 text-red-500" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900">
             Connection Lost
@@ -697,7 +700,7 @@ const VoiceWidget = () => {
                 </>
               ) : (
                 <>
-                  <FaWifiSlash className="text-sm" />
+                  <MdWifiOff className="text-sm" />
                   Not Connected
                 </>
               )}
