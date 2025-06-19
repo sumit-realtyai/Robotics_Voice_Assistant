@@ -60,7 +60,7 @@ const VoiceWidget = () => {
     queryParams.get("vapiPublicKey") ||
     localStorage.getItem("vapiPublicKey") ||
     "57bd3c84-dd46-41ce-82ab-2bbe48163d90";
-  const supportBtnRef = useRef(null); // for esp button
+  
 
   const {
     keywordDetection,
@@ -230,36 +230,7 @@ const VoiceWidget = () => {
     };
   }, []);
 
-  const connectToESP32 = async () => {
-    try {
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [{ name: "Blinker_1" }],
-        optionalServices: ["2fe3c548-43cf-4fa0-b3b4-67278f0e3e7c"],
-      });
-
-      const server = await device.gatt.connect();
-      const service = await server.getPrimaryService(
-        "2fe3c548-43cf-4fa0-b3b4-67278f0e3e7c"
-      );
-      const char = await service.getCharacteristic(
-        "2fe3c549-43cf-4fa0-b3b4-67278f0e3e7c"
-      );
-
-      await char.startNotifications(); // ✅ Enable notifications
-
-      char.addEventListener("characteristicvaluechanged", (event) => {
-        const value = new TextDecoder().decode(event.target.value);
-        console.log("Received from ESP:", value);
-        if (value === "SUPPORT") {
-          supportBtnRef.current?.click(); // ✅ Trigger button press
-        }
-      });
-      setEspCharacteristic(char);
-      console.log("ESP32 connected.");
-    } catch (err) {
-      console.error("ESP32 connection failed:", err);
-    }
-  };
+  
 
   const sendBlinkCommand = async () => {
     try {
@@ -643,7 +614,7 @@ const VoiceWidget = () => {
 
         <div className="flex justify-center">
           <button
-            ref={supportBtnRef} // ✅ ADD THIS LINE
+            
             onClick={toggleAssistant}
             className={`rounded-full p-4 text-white shadow-lg transition-transform duration-300 ease-in-out ${
               isAssistantOn
@@ -663,13 +634,7 @@ const VoiceWidget = () => {
             )}
           </button>
 
-          <button
-            onClick={connectToESP32}
-            type="submit"
-            className="w-full py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition duration-300"
-          >
-            connect to ESP32
-          </button>
+
         </div>
       </div>
     </div>
