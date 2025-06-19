@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaMicrophone, FaBluetooth, FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaSpinner } from 'react-icons/fa';
 import { MdBluetooth } from 'react-icons/md';
+import { useESP32 } from '../contexts/ESP32Context';
 
 const PermissionsCheck = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  const { setCharacteristic, isConnected } = useESP32();
   
   const [microphoneStatus, setMicrophoneStatus] = useState('pending'); // pending, granted, denied
   const [esp32Status, setEsp32Status] = useState('pending'); // pending, connected, failed
-  const [espCharacteristic, setEspCharacteristic] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -24,6 +25,13 @@ const PermissionsCheck = () => {
   const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
   const prompt = queryParams.get("prompt") || "";
   const toyName = queryParams.get('toyName');
+
+  // Update ESP32 status based on global state
+  useEffect(() => {
+    if (isConnected) {
+      setEsp32Status('connected');
+    }
+  }, [isConnected]);
  
   const requestMicrophonePermission = async () => {
     try {
@@ -66,13 +74,10 @@ const PermissionsCheck = () => {
         "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
       );
 
-      // Store characteristic globally for use in other components
-      window.esp32Characteristic = char;
-      sessionStorage.setItem('esp32Connected', 'true');
-      
-      setEspCharacteristic(char);
+      // Store characteristic in global state
+      setCharacteristic(char);
       setEsp32Status('connected');
-      console.log("ESP32 connected successfully, characteristic stored globally");
+      console.log("ESP32 connected successfully, characteristic stored in global state");
     } catch (error) {
       console.error("ESP32 connection failed:", error);
       setEsp32Status('failed');

@@ -9,17 +9,20 @@ import {
   FaExclamationTriangle,
   FaCheckCircle,
   FaVolumeUp,
+  FaWifi,
+  FaWifiSlash,
 } from "react-icons/fa";
+import { useESP32 } from "./contexts/ESP32Context";
 
 // will initialize Vapi instance once assistant is created
 let vapi;
 const VoiceWidget = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  const { espCharacteristic, isConnected, connectionLost, acknowledgeConnectionLoss } = useESP32();
 
   const vapiRef = useRef(null);
   const errorAudioIntervalRef = useRef(null);
-  const [espCharacteristic, setEspCharacteristic] = useState(null);
   const [isAssistantOn, setIsAssistantOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [childName, setChildName] = useState(
@@ -89,9 +92,8 @@ const VoiceWidget = () => {
 
   // Setup ESP32 characteristic and event listener
   useEffect(() => {
-    // Get ESP32 characteristic from global storage
-    if (window.esp32Characteristic) {
-      setEspCharacteristic(window.esp32Characteristic);
+    if (espCharacteristic) {
+      console.log("ESP32 characteristic available, setting up event listener");
       
       // Add event listener for ESP32 characteristic value changes
       const handleCharacteristicValueChanged = (event) => {
@@ -104,8 +106,8 @@ const VoiceWidget = () => {
       };
 
       // Enable notifications and add event listener
-      window.esp32Characteristic.startNotifications().then(() => {
-        window.esp32Characteristic.addEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
+      espCharacteristic.startNotifications().then(() => {
+        espCharacteristic.addEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
         console.log("ESP32 characteristic event listener added");
       }).catch(err => {
         console.error("Failed to start ESP32 notifications:", err);
@@ -113,15 +115,15 @@ const VoiceWidget = () => {
 
       // Cleanup function
       return () => {
-        if (window.esp32Characteristic) {
-          window.esp32Characteristic.removeEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
+        if (espCharacteristic) {
+          espCharacteristic.removeEventListener("characteristicvaluechanged", handleCharacteristicValueChanged);
           console.log("ESP32 characteristic event listener removed");
         }
       };
     } else {
-      console.log("ESP32 characteristic not available in global storage");
+      console.log("ESP32 characteristic not available");
     }
-  }, []);
+  }, [espCharacteristic]);
 
   // Function to play error audio
   const playErrorAudio = (errorMessage) => {
@@ -537,6 +539,41 @@ const VoiceWidget = () => {
     <div>Error initializing Porcupine: {error.message}</div>;
   }
 
+  // Show connection lost warning
+  if (connectionLost) {
+    return (
+      <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl mb-20 md:mb-0">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center">
+            <FaWifiSlash className="w-12 h-12 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Connection Lost
+          </h2>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-700 text-sm mb-3">
+              Your ESP32 connection was lost due to a page reload. Please reconnect your Talkypie device to continue.
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => window.location.href = '/permissions'}
+                className="w-full py-2 px-4 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-all duration-300"
+              >
+                Reconnect Talkypie
+              </button>
+              <button
+                onClick={acknowledgeConnectionLoss}
+                className="w-full py-2 px-4 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
+              >
+                Continue Without Hardware
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Show loading state while creating assistant
   if (assistantStatus === "pending" || isCreatingAssistant) {
     return (
@@ -649,11 +686,21 @@ const VoiceWidget = () => {
           <p className="text-gray-700">
             ESP32 Connection:{" "}
             <span
-              className={`font-semibold ${
-                espCharacteristic ? "text-green-600" : "text-red-600"
+              className={`font-semibold flex items-center gap-1 ${
+                isConnected ? "text-green-600" : "text-red-600"
               }`}
             >
-              {espCharacteristic ? "Connected & Listening" : "Not Connected"}
+              {isConnected ? (
+                <>
+                  <FaWifi className="text-sm" />
+                  Connected & Listening
+                </>
+              ) : (
+                <>
+                  <FaWifiSlash className="text-sm" />
+                  Not Connected
+                </>
+              )}
             </span>
           </p>
         </div>
