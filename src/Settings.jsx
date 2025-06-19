@@ -68,6 +68,7 @@ const Settings = () => {
 
     setSettings({ ...tempSettings });
     setIsEditing(false);
+    navigate("/start"); // Redirect to Start Talkypie after saving
   };
 
   const handleCancel = () => {
