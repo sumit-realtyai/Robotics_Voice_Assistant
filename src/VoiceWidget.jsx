@@ -80,8 +80,8 @@ const VoiceWidget = () => {
   } = usePorcupine();
 
   const porcupineKeyword = {
-    publicPath: "assets/Hi-Eva_en_wasm_v3_0_0.ppn",
-    label: "Hi Eva",
+    publicPath: "assets/Hi-coco_en_wasm_v3_0_0.ppn",
+    label: "Hi coco",
   };
 
   const porcupineModel = {
@@ -190,6 +190,7 @@ const VoiceWidget = () => {
           ${currentLearning}
         `;
 
+        // https://api-talkypies.vercel.app
       const response = await axios.post(
         "https://api-talkypies.vercel.app/vapi/create-assistant",
         {
@@ -683,7 +684,7 @@ const VoiceWidget = () => {
             >
               {wakeWordDetected
                 ? "Detected! Vapi is ready."
-                : "Waiting for 'Hi Eva'..."}
+                : "Waiting for 'Hi Coco'..."}
             </span>
           </p>
           <p className="text-gray-700">
