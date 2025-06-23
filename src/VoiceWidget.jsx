@@ -209,7 +209,9 @@ const VoiceWidget = () => {
       vapi = new Vapi(vapiPublicKey);
       setAssistantId(newAssistantId);
       setAssistantStatus("created");
-
+      setIsLoading(true);
+       const audio = new Audio("/connect.mp3");
+      audio.play();
       // Store assistant ID for later use
       localStorage.setItem("assistantId", newAssistantId);
     } catch (error) {
@@ -303,7 +305,7 @@ const VoiceWidget = () => {
       console.error("Failed to send off command:", error);
     }
   };
-
+ 
   const resetInactivityTimer = () => {
     if (inactivityTimeoutRef.current) {
       clearTimeout(inactivityTimeoutRef.current);
@@ -335,19 +337,16 @@ const VoiceWidget = () => {
     return () => release();
   }, [init, start, release, isFormSubmitted, porcupineKey, assistantStatus]);
 
+  
   useEffect(() => {
     if (!isFormSubmitted || assistantStatus !== "created") return;
-    console.log("assistant: ", isAssistantOn);
-    console.log("wakeWordDetected: ", wakeWordDetected);
-    console.log("mediaDetection: ", mediaDetection);
-    console.log("isFormSubmitted: ", isFormSubmitted);
     console.log("line 11111111111111");
     const audio = new Audio("/wake up.mp3");
     let intervalId = null;
-
-    if (mediaDetection || wakeWordDetected || isAssistantOn) {
-      console.log("line 777777777777777777777777777777777777777777");
-      console.log("line 8888888888888888888888888888");
+    
+    console.log("inside wake up effect", isLoading, "  ",assistantStatus);
+    if (mediaDetection || wakeWordDetected || isAssistantOn || isLoading) {
+      
       audio.currentTime = 0;
       console.log(
         "Wake word detected or user manually started vapi — paused audio immediately."
@@ -390,6 +389,8 @@ const VoiceWidget = () => {
         audio?.pause();
         console.log("line 10000000000000000000000000000");
       }
+
+
     };
   }, [
     isFormSubmitted,
