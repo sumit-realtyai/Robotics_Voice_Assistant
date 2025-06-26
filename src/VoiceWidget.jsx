@@ -58,6 +58,8 @@ const VoiceWidget = () => {
 
   const isAssistantOnRef = useRef(isAssistantOn);
   const inactivityTimeoutRef = useRef(null);
+  const wakeUpIntervalRef = useRef(null);
+  const wakeUpAudioRef = useRef(null);
 
   // Get VAPI keys from localStorage or URL params
   const vapiPrivateKey =
@@ -210,8 +212,8 @@ const VoiceWidget = () => {
       setAssistantId(newAssistantId);
       setAssistantStatus("created");
       setIsLoading(true);
-       const audio = new Audio("/connect.mp3");
-      audio.play();
+      //  const audio = new Audio("/connect.mp3");
+      // audio.play();
       // Store assistant ID for later use
       localStorage.setItem("assistantId", newAssistantId);
     } catch (error) {
@@ -243,14 +245,15 @@ const VoiceWidget = () => {
   useEffect(() => {
     if (assistantId && assistantStatus === "created") {
       //Light on function
-      const lightOn = async () => {
-        console.log("Intro audio finished. Connecting to Eva...");
-        await sendBlinkCommand();
-        // await new Promise(resolve => setTimeout(resolve, 5000));
-        toggleAssistant(); // Start the assistant if it was created successfully
-      };
-      lightOn();
+      // const lightOn = async () => {
+      //   console.log("Intro audio finished. Connecting to Eva...");
+      //   await sendBlinkCommand();
+      //   // await new Promise(resolve => setTimeout(resolve, 5000));
+      //   toggleAssistant(); // Start the assistant if it was created successfully
+      // };
+      // lightOn();
 
+      toggleAssistant(); // Start the assistant if it was created successfully
        
     }
   }, [assistantId, assistantStatus]);
@@ -345,7 +348,7 @@ const VoiceWidget = () => {
     let intervalId = null;
     
     console.log("inside wake up effect", isLoading, "  ",assistantStatus);
-    if (mediaDetection || wakeWordDetected || isAssistantOn || isLoading) {
+    if (mediaDetection || wakeWordDetected || isAssistantOn || isAssistantOnRef.current || isLoading) {
       
       audio.currentTime = 0;
       console.log(
@@ -360,6 +363,7 @@ const VoiceWidget = () => {
     audio.play().catch((e) => {
       console.warn("Audio play failed:", e);
     });
+    wakeUpAudioRef.current = audio;
     console.log("line 33333333333333");
 
     const playAudio = () => {
@@ -369,16 +373,19 @@ const VoiceWidget = () => {
       audio.play().catch((e) => {
         console.warn("Audio play failed:", e);
       });
+      wakeUpAudioRef.current = audio;
+
       console.log("line 66666666666666");
       console.log("Playing starting audio...");
     };
 
     intervalId = setInterval(() => {
-      if (!wakeWordDetected && !isAssistantOn) {
-        console.log("line 44444444444444444444");
+      if (!wakeWordDetected && !isAssistantOnRef.current) {
+        
         playAudio();
       }
     }, 10000);
+    
 
     return () => {
       console.log("Cleaning up starting audio interval");
@@ -398,6 +405,7 @@ const VoiceWidget = () => {
     mediaDetection,
     isAssistantOn,
     assistantStatus,
+    isLoading
   ]);
 
   useEffect(() => {
@@ -407,28 +415,27 @@ const VoiceWidget = () => {
     }
   }, [keywordDetection]);
 
-  useEffect(() => {
-    if (
-      (mediaDetection || wakeWordDetected) &&
-      isFormSubmitted &&
-      assistantStatus === "created"
-    ) {
-      if (isAssistantOnRef.current) {
-        console.log("Assistant is already on, no need to start again.");
-        return;
-      }
+const introAudio = async () => {
+  console.log("Starting intro audio... before connecting tovapi");
+  
+  // Stop any wake-up audio interval
+  if(wakeUpAudioRef.current) {
+    wakeUpAudioRef.current.pause(); // Pause any ongoing wake-up audio
+    console.log("Paused wake-up audio before starting intro audio.");
+    wakeUpAudioRef.current.currentTime = 0; // Reset the audio to the beginning
+  }
 
-      setIsLoading(true);
-      const audio = new Audio("/connect.mp3");
-      audio.play();
+   const audio = new Audio("/connect.mp3");
+      await audio.play();
+      await new Promise((resolve) => {
+        audio.onended = () => {
+          console.log("waait until intro audio finished");
+          resolve();
+        };
+      })
+      await sendBlinkCommand();
 
-      audio.onended = async () => {
-        console.log("Intro audio finished. Connecting to Eva...");
-        await sendBlinkCommand();
-        toggleAssistant();
-      };
-
-      let intervalId;
+      let intervalId; 
       let repeatedAudio;
 
       intervalId = setInterval(() => {
@@ -445,9 +452,51 @@ const VoiceWidget = () => {
         sendOnCommand();
         console.log("Eva connected. Stopped repeating audio.");
       });
+}
+ useEffect(() => {
+    if (
+      (mediaDetection || wakeWordDetected) &&
+      isFormSubmitted &&
+      assistantStatus === "created"
+    ) {
+      if (isAssistantOnRef.current) {
+        console.log("Assistant is already on, no need to start again.");
+        return;
+      }
+
+      setIsLoading(true);
+      // direct call toggleAssistant and inside it call introAudio fun
+      toggleAssistant();
+
+      // const audio = new Audio("/connect.mp3");
+      // audio.play();
+
+      // audio.onended = async () => {
+      //   console.log("Intro audio finished. Connecting to Eva...");
+      //   await sendBlinkCommand();
+      //   toggleAssistant();
+      // };
+
+      // let intervalId;
+      // let repeatedAudio;
+
+      // intervalId = setInterval(() => {
+      //   repeatedAudio = new Audio(audio.src);
+      //   repeatedAudio.play();
+      //   console.log("Playing intro audio...");
+      // }, 5000);
+
+      // vapi.once("speech-start", async () => {
+      //   repeatedAudio.pause();
+      //   console.log("speech-start called only once");
+      //   console.log("Assistant has started speaking.");
+      //   clearInterval(intervalId);
+      //   sendOnCommand();
+      //   console.log("Eva connected. Stopped repeating audio.");
+      // });
 
       return () => {
-        clearInterval(intervalId);
+        // clearInterval(intervalId);
       };
     }
   }, [wakeWordDetected, isFormSubmitted, mediaDetection, assistantStatus]);
@@ -498,6 +547,7 @@ const VoiceWidget = () => {
       console.log("Call started:", call);
       setIsLoading(false);
       setIsAssistantOn(true);
+      isAssistantOnRef.current = true;
       vapi.once("call-end", () => {
         console.log(
           "Call ended event received",
@@ -505,8 +555,9 @@ const VoiceWidget = () => {
           "  ",
           isAssistantOnRef.current
         );
-        if (isAssistantOnRef.current) {
-          resetInactivityTimer();
+        if (isAssistantOn || isAssistantOnRef.current) {
+          // resetInactivityTimer();
+          toggleAssistant(); // Call toggleAssistant to handle end call processing
         }
       });
     } catch (error) {
@@ -514,21 +565,42 @@ const VoiceWidget = () => {
       setIsLoading(false);
     }
   };
-
+  const endCallProcessing = async () => {
+    console.log("End call processing started..... before stopping Vapi");
+    try {
+       
+      const audio = new Audio("/disconnect.mp3");
+      await  audio.play();
+      await new Promise((resolve) => {
+        audio.onended = () => {
+          console.log("wait until disconnect audio finished");
+          resolve();
+        };
+      })
+      await sendOffCommand();
+    } catch (error) {
+      console.error("Error processing end call:", error);
+      
+    }
+  };
   const toggleAssistant = async () => {
-    console.log("assistant status from ref: inside ", isAssistantOnRef.current);
+    // console.log("assistant status from ref: inside ", isAssistantOnRef.current);
 
     if (isAssistantOnRef.current) {
       setIsLoading(true);
-      await sendOffCommand();
       vapi.stop();
+       setIsAssistantOn(false);
+      isAssistantOnRef.current = false;
+      await endCallProcessing();
       console.log("call disconnected");
-      setIsAssistantOn(false);
+     
       setIsLoading(false);
       setWakeWordDetected(false);
       setMediaDetect(false);
     } else {
-      await sendOnCommand();
+      // await sendOnCommand();
+      setIsLoading(true);
+      await introAudio();
       startVapiAssistant();
     }
   };
