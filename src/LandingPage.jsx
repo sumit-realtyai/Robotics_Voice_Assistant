@@ -9,6 +9,11 @@ const LandingPage = () => {
 
   const carouselVideos = [
     {
+      url: "https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_2.mp4",
+      title: "Meet Your Talkypie",
+      description: "Discover the revolutionary AI companion that transforms how children learn and play."
+    },
+    {
       url: "https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_3.mp4",
       title: "Learning Through Play",
       description: "Watch children explore educational concepts through interactive storytelling with their Talkypie."
@@ -34,20 +39,16 @@ const LandingPage = () => {
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % carouselVideos.length);
+    setCurrentSlide((prev) => (prev + 1) % Math.ceil(carouselVideos.length / 2));
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + carouselVideos.length) % carouselVideos.length);
+    setCurrentSlide((prev) => (prev - 1 + Math.ceil(carouselVideos.length / 2)) % Math.ceil(carouselVideos.length / 2));
   };
 
   const getVisibleVideos = () => {
-    const videos = [];
-    for (let i = 0; i < 2; i++) {
-      const index = (currentSlide + i) % carouselVideos.length;
-      videos.push(carouselVideos[index]);
-    }
-    return videos;
+    const startIndex = currentSlide * 2;
+    return carouselVideos.slice(startIndex, startIndex + 2);
   };
 
   return (
@@ -66,74 +67,85 @@ const LandingPage = () => {
               A soft toy powered by Alexa-like AI—only it talks like a playful, friendly teddy, not a robot.
             </p>
             
-            {/* Hero Video Section - Reduced dimensions for bigger screens */}
-            <div className="max-w-2xl lg:max-w-3xl mx-auto mb-8">
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-                <video
-                  className="w-full h-auto max-h-[350px] lg:max-h-[400px] object-cover"
-                  controls
-                  autoPlay
-                  muted
-                  loop
-                  src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_2.mp4"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </div>
-
-            {/* Video Carousel Section */}
-            <div className="max-w-6xl mx-auto mb-8">
-              <div className="relative">
-                <div className="flex items-center justify-center gap-4 overflow-hidden">
-                  {getVisibleVideos().map((video, index) => (
-                    <div key={`${currentSlide}-${index}`} className="flex-shrink-0 w-full md:w-1/2 px-2">
-                      <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105">
-                        <div className="aspect-video">
-                          <video
-                            className="w-full h-full object-cover"
-                            controls
-                            src={video.url}
-                          >
-                            Your browser does not support the video tag.
-                          </video>
-                        </div>
-                        <div className="p-4">
-                          <h4 className="text-lg font-bold text-gray-900 mb-2">{video.title}</h4>
-                          <p className="text-gray-600 text-sm">{video.description}</p>
+            {/* Enhanced Video Carousel Section */}
+            <div className="max-w-7xl mx-auto mb-12">
+              <div className="relative bg-gradient-to-r from-indigo-100 via-purple-50 to-pink-100 rounded-3xl p-8 shadow-2xl">
+                <div className="overflow-hidden rounded-2xl">
+                  <div 
+                    className="flex transition-transform duration-700 ease-in-out"
+                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                  >
+                    {Array.from({ length: Math.ceil(carouselVideos.length / 2) }).map((_, slideIndex) => (
+                      <div key={slideIndex} className="w-full flex-shrink-0">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4">
+                          {carouselVideos.slice(slideIndex * 2, slideIndex * 2 + 2).map((video, videoIndex) => (
+                            <div key={videoIndex} className="group">
+                              <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-2xl">
+                                <div className="relative aspect-video overflow-hidden">
+                                  <video
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    controls
+                                    preload="metadata"
+                                    src={video.url}
+                                  >
+                                    Your browser does not support the video tag.
+                                  </video>
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                </div>
+                                <div className="p-6">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">
+                                    {video.title}
+                                  </h4>
+                                  <p className="text-gray-600 leading-relaxed">
+                                    {video.description}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                {/* Carousel Navigation */}
+                {/* Enhanced Navigation Buttons */}
                 <button
                   onClick={prevSlide}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/95 hover:bg-white text-indigo-600 rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl backdrop-blur-sm border border-indigo-100"
+                  disabled={currentSlide === 0}
                 >
                   <FaChevronLeft className="text-xl" />
                 </button>
                 <button
                   onClick={nextSlide}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/95 hover:bg-white text-indigo-600 rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl backdrop-blur-sm border border-indigo-100"
+                  disabled={currentSlide === Math.ceil(carouselVideos.length / 2) - 1}
                 >
                   <FaChevronRight className="text-xl" />
                 </button>
 
-                {/* Carousel Indicators */}
-                <div className="flex justify-center mt-6 gap-2">
-                  {carouselVideos.map((_, index) => (
+                {/* Enhanced Carousel Indicators */}
+                <div className="flex justify-center mt-8 gap-3">
+                  {Array.from({ length: Math.ceil(carouselVideos.length / 2) }).map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentSlide(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      className={`transition-all duration-300 rounded-full ${
                         index === currentSlide
-                          ? 'bg-indigo-600 scale-125'
-                          : 'bg-gray-300 hover:bg-gray-400'
+                          ? 'w-8 h-3 bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg'
+                          : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 hover:scale-125'
                       }`}
                     />
                   ))}
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mt-6 w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-700 ease-in-out"
+                    style={{ width: `${((currentSlide + 1) / Math.ceil(carouselVideos.length / 2)) * 100}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -153,76 +165,6 @@ const LandingPage = () => {
                 <FaPlay className="text-xl" />
                 Parent Talkypie app
               </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Videos Section - Keep the original section as well */}
-      <section className="py-20 px-4 bg-gradient-to-br from-indigo-50 to-purple-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              See Talkypies in Action
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Watch how children around the world are learning, laughing, and growing with their Talkypie companions.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="aspect-video">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_3.mp4"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-              <div className="p-6">
-                <h4 className="text-lg font-bold text-gray-900 mb-2">Learning Through Play</h4>
-                <p className="text-gray-600">
-                  Watch children explore educational concepts through interactive storytelling with their Talkypie.
-                </p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="aspect-video">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_4.mp4"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-              <div className="p-6">
-                <h4 className="text-lg font-bold text-gray-900 mb-2">Building Confidence</h4>
-                <p className="text-gray-600">
-                  Discover how Talkypies helps children find their voice and express themselves confidently.
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className="aspect-video">
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  src="https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_5.mp4"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-              <div className="p-6">
-                <h4 className="text-lg font-bold text-gray-900 mb-2">Interactive Learning</h4>
-                <p className="text-gray-600">
-                  Experience how Talkypies creates engaging conversations that make learning fun and memorable.
-                </p>
-              </div>
             </div>
           </div>
         </div>
