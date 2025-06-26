@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaMicrophoneAlt, FaPlay, FaShoppingCart, FaChild, FaGraduationCap, FaLanguage, FaMobile, FaHeart, FaBrain } from 'react-icons/fa';
+import { FaMicrophoneAlt, FaPlay, FaShoppingCart, FaChild, FaGraduationCap, FaLanguage, FaMobile, FaHeart, FaBrain, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { MdScreenLockPortrait, MdVoiceChat, MdFamilyRestroom } from 'react-icons/md';
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const carouselVideos = [
+    {
+      url: "https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_3.mp4",
+      title: "Learning Through Play",
+      description: "Watch children explore educational concepts through interactive storytelling with their Talkypie."
+    },
+    {
+      url: "https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_4.mp4",
+      title: "Building Confidence",
+      description: "Discover how Talkypies helps children find their voice and express themselves confidently."
+    },
+    {
+      url: "https://kids-storybooks.s3.ap-south-1.amazonaws.com/original_images/talkypie_5.mp4",
+      title: "Interactive Learning",
+      description: "Experience how Talkypies creates engaging conversations that make learning fun and memorable."
+    }
+  ];
 
   const handleStartTalkypie = () => {
     navigate('/start');
@@ -12,6 +31,23 @@ const LandingPage = () => {
 
   const handleBuyTalkypie = () => {
     navigate('/payment');
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % carouselVideos.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + carouselVideos.length) % carouselVideos.length);
+  };
+
+  const getVisibleVideos = () => {
+    const videos = [];
+    for (let i = 0; i < 2; i++) {
+      const index = (currentSlide + i) % carouselVideos.length;
+      videos.push(carouselVideos[index]);
+    }
+    return videos;
   };
 
   return (
@@ -30,11 +66,11 @@ const LandingPage = () => {
               A soft toy powered by Alexa-like AI—only it talks like a playful, friendly teddy, not a robot.
             </p>
             
-            {/* Hero Video Section */}
-            <div className="max-w-4xl mx-auto mb-8">
+            {/* Hero Video Section - Reduced dimensions for bigger screens */}
+            <div className="max-w-2xl lg:max-w-3xl mx-auto mb-8">
               <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
                 <video
-                  className="w-full h-auto max-h-[500px] object-cover"
+                  className="w-full h-auto max-h-[350px] lg:max-h-[400px] object-cover"
                   controls
                   autoPlay
                   muted
@@ -43,6 +79,62 @@ const LandingPage = () => {
                 >
                   Your browser does not support the video tag.
                 </video>
+              </div>
+            </div>
+
+            {/* Video Carousel Section */}
+            <div className="max-w-6xl mx-auto mb-8">
+              <div className="relative">
+                <div className="flex items-center justify-center gap-4 overflow-hidden">
+                  {getVisibleVideos().map((video, index) => (
+                    <div key={`${currentSlide}-${index}`} className="flex-shrink-0 w-full md:w-1/2 px-2">
+                      <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105">
+                        <div className="aspect-video">
+                          <video
+                            className="w-full h-full object-cover"
+                            controls
+                            src={video.url}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                        <div className="p-4">
+                          <h4 className="text-lg font-bold text-gray-900 mb-2">{video.title}</h4>
+                          <p className="text-gray-600 text-sm">{video.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Carousel Navigation */}
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110"
+                >
+                  <FaChevronLeft className="text-xl" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110"
+                >
+                  <FaChevronRight className="text-xl" />
+                </button>
+
+                {/* Carousel Indicators */}
+                <div className="flex justify-center mt-6 gap-2">
+                  {carouselVideos.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        index === currentSlide
+                          ? 'bg-indigo-600 scale-125'
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
             
@@ -66,7 +158,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Videos Section */}
+      {/* Videos Section - Keep the original section as well */}
       <section className="py-20 px-4 bg-gradient-to-br from-indigo-50 to-purple-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
