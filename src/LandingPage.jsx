@@ -64,33 +64,33 @@ const LandingPage = () => {
               </h1>
             </div>
             <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-              A soft toy powered by Alexa-like AI—only it talks like a playful, friendly teddy, not a robot.
+             A collection of AI-powered soft toys that talk in their own character voices—creating warm, playful conversations kids love. The lion sounds brave, the teddy sounds gentle—inviting children into a magical, fairy-tale-like experience.
             </p>
             
             {/* Enhanced Video Carousel Section */}
-            <div className="max-w-7xl mx-auto mb-12">
+            <div className="w-full mb-12  sm:px-4 md:px-8">
               <div className="relative bg-gradient-to-r from-indigo-100 via-purple-50 to-pink-100 rounded-3xl p-8 shadow-2xl">
                 <div className="overflow-hidden rounded-2xl">
                   <div 
-                    className="flex transition-transform duration-700 ease-in-out"
+                    className="flex transition-transform duration-700 "
                     style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                   >
                     {Array.from({ length: Math.ceil(carouselVideos.length / 2) }).map((_, slideIndex) => (
                       <div key={slideIndex} className="w-full flex-shrink-0">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 px-0 sm:px-4">
                           {carouselVideos.slice(slideIndex * 2, slideIndex * 2 + 2).map((video, videoIndex) => (
                             <div key={videoIndex} className="group">
-                              <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-2xl">
+                              <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 ">
                                 <div className="relative aspect-video overflow-hidden">
                                   <video
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                    className="w-full h-full object-cover transition-transform duration-500 "
                                     controls
                                     preload="metadata"
                                     src={video.url}
                                   >
                                     Your browser does not support the video tag.
                                   </video>
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
                                 <div className="p-6">
                                   <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors duration-300">
@@ -112,17 +112,18 @@ const LandingPage = () => {
                 {/* Enhanced Navigation Buttons */}
                 <button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/95 hover:bg-white text-indigo-600 rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl backdrop-blur-sm border border-indigo-100"
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-indigo-600 rounded-full p-2 shadow-md transition-all duration-300 hover:scale-105 border border-indigo-100 backdrop-blur-sm"
                   disabled={currentSlide === 0}
                 >
-                  <FaChevronLeft className="text-xl" />
+                  <FaChevronLeft className="text-base" />
                 </button>
+
                 <button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/95 hover:bg-white text-indigo-600 rounded-full p-4 shadow-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl backdrop-blur-sm border border-indigo-100"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-indigo-600 rounded-full p-2 shadow-md transition-all duration-300 hover:scale-105 border border-indigo-100 backdrop-blur-sm"
                   disabled={currentSlide === Math.ceil(carouselVideos.length / 2) - 1}
                 >
-                  <FaChevronRight className="text-xl" />
+                  <FaChevronRight className="text-base" />
                 </button>
 
                 {/* Enhanced Carousel Indicators */}
