@@ -171,13 +171,16 @@ const VoiceWidget = () => {
 
   // Create assistant when component mounts
   const createAssistant = async () => {
-    if (!childName || !vapiPrivateKey) {
+    if (!childName ) {
+      console.log("Missing required parameters");
       setAssistantStatus("failed");
       const errorMsg = "Missing required information for assistant creation.";
       setAssistantError(errorMsg);
       startErrorAudioInterval(errorMsg);
       return;
     }
+
+    console.log("Creating assistant with parameters:");
 
     try {
       setIsCreatingAssistant(true);
@@ -263,7 +266,6 @@ const VoiceWidget = () => {
     if (
       isFormSubmitted &&
       childName &&
-      vapiPrivateKey &&
       assistantStatus === "pending"
     ) {
       createAssistant();
