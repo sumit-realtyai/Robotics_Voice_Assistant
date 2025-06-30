@@ -7,6 +7,9 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [videosPerSlide, setVideosPerSlide] = useState(2);
+  const [touchStartX, setTouchStartX] = useState(null);
+const [touchEndX, setTouchEndX] = useState(null);
+
 
 useEffect(() => {
   const handleResize = () => {
@@ -90,7 +93,12 @@ const prevSlide = () => {
             {/* Enhanced Video Carousel Section */}
             <div className="w-full mb-12  sm:px-4 md:px-8">
               <div className="relative bg-gradient-to-r from-indigo-100 via-purple-50 to-pink-100 rounded-3xl py-8 sm:px-8 shadow-2xl"
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                
+              >
+                <div className="overflow-hidden rounded-2xl">
+                  <div 
+                    className="flex transition-transform duration-700 "
+                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                     
                     onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
                     onTouchMove={(e) => setTouchEndX(e.touches[0].clientX)}
@@ -107,10 +115,6 @@ const prevSlide = () => {
                       setTouchStartX(null);
                       setTouchEndX(null);
                     }}
-              >
-                <div className="overflow-hidden rounded-2xl">
-                  <div 
-                    className="flex transition-transform duration-700 "
                     
                   >
                     {Array.from({ length: Math.ceil(carouselVideos.length / videosPerSlide) }).map((_, slideIndex) => (
