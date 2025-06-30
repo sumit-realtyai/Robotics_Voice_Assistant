@@ -93,28 +93,28 @@ const prevSlide = () => {
             {/* Enhanced Video Carousel Section */}
             <div className="w-full mb-12  sm:px-4 md:px-8">
               <div className="relative bg-gradient-to-r from-indigo-100 via-purple-50 to-pink-100 rounded-3xl py-8 sm:px-8 shadow-2xl"
-                
-              >
-                <div className="overflow-hidden rounded-2xl">
-                  <div 
-                    className="flex transition-transform duration-700 "
-                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                    
-                    onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
+                onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
                     onTouchMove={(e) => setTouchEndX(e.touches[0].clientX)}
                     onTouchEnd={() => {
                       if (!touchStartX || !touchEndX) return;
                       const deltaX = touchStartX - touchEndX;
                     
-                      if (deltaX > 50 && currentSlide < Math.ceil(carouselVideos.length / videosPerSlide) - 1) {
+                      if (deltaX > 30 && currentSlide < Math.ceil(carouselVideos.length / videosPerSlide) - 1) {
                         nextSlide(); // swipe left → next
-                      } else if (deltaX < -50 && currentSlide > 0) {
+                      } else if (deltaX < -30 && currentSlide > 0) {
                         prevSlide(); // swipe right → previous
                       }
                     
                       setTouchStartX(null);
                       setTouchEndX(null);
                     }}
+              >
+                <div className="overflow-hidden rounded-2xl">
+                  <div 
+                    className="flex transition-transform duration-700 "
+                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                    
+                    
                     
                   >
                     {Array.from({ length: Math.ceil(carouselVideos.length / videosPerSlide) }).map((_, slideIndex) => (
@@ -123,9 +123,9 @@ const prevSlide = () => {
                       {carouselVideos.slice(slideIndex * videosPerSlide, slideIndex * videosPerSlide + videosPerSlide).map((video, videoIndex) => (
                         <div key={videoIndex} className="group">
                               <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 ">
-                                <div className="relative aspect-video overflow-hidden">
+                                <div className="relative aspect-[4/3] sm:aspect-video overflow-hidden">
                                   <video
-                                    className="w-full h-full object-cover transition-transform duration-500 "
+                                    className="w-full h-full  object-cover transition-transform duration-500 "
                                     controls
                                     preload="metadata"
                                     src={video.url}
