@@ -84,7 +84,7 @@ const prevSlide = () => {
               </h1>
             </div>
             <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-             A collection of AI-powered soft toys that talk in their own character voices—creating warm, playful conversations kids love. The lion sounds brave, the teddy sounds gentle—inviting children into a magical, fairy-tale-like experience.
+             A collection of AI-powered soft toys that talk in their own character voices—creating warm, playful conversations kids love.
             </p>
             
             {/* Enhanced Video Carousel Section */}
@@ -143,6 +143,10 @@ const prevSlide = () => {
                       </div>
                     ))}
                   </div>
+                  <p className="text-xl md:text-2xl text-gray-700 mt-8 max-w-3xl mx-auto leading-relaxed">
+                   The lion sounds brave, the teddy sounds gentle—inviting children into a magical, fairy-tale-like experience.
+                 </p>
+                
                 </div>
 
                 {/* Enhanced Navigation Buttons */}
