@@ -109,19 +109,16 @@ const prevSlide = () => {
                       setTouchEndX(null);
                     }}
               >
-                <div className="overflow-hidden rounded-2xl">
+                <div className="overflow-hidden rounded-2xl relative">
                   <div 
                     className="flex transition-transform duration-700 "
                     style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                    
-                    
-                    
                   >
                     {Array.from({ length: Math.ceil(carouselVideos.length / videosPerSlide) }).map((_, slideIndex) => (
                       <div key={slideIndex} className="w-full flex-shrink-0">
                       <div className={`grid grid-cols-1 ${videosPerSlide === 2 ? 'md:grid-cols-2' : ''} gap-4 sm:gap-6 px-0 sm:px-4`}>
                       {carouselVideos.slice(slideIndex * videosPerSlide, slideIndex * videosPerSlide + videosPerSlide).map((video, videoIndex) => (
-                        <div key={videoIndex} className="group">
+                        <div key={videoIndex} className="group relative">
                               <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 ">
                                 <div className="relative aspect-[4/3] sm:aspect-video overflow-hidden">
                                   <video
@@ -149,9 +146,31 @@ const prevSlide = () => {
                       </div>
                     ))}
                   </div>
-                  <p className="text-base md:text-2xl text-gray-700 mt-8 max-w-3xl mx-auto leading-relaxed">
-                   The lion sounds brave, the teddy sounds gentle—inviting children into a magical, fairy-tale-like experience.
-                 </p>
+
+                  {/* Mobile Navigation Buttons - Positioned to center on video content */}
+                  <button
+                    onClick={prevSlide}
+                    className="sm:hidden absolute left-2 top-1/2 transform -translate-y-1/2 -translate-y-8 bg-white/90 hover:bg-white text-indigo-600 rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-20 min-w-[32px] min-h-[32px] flex items-center justify-center"
+                    disabled={currentSlide === 0}
+                    style={{ 
+                      opacity: currentSlide === 0 ? 0.4 : 1,
+                      pointerEvents: currentSlide === 0 ? 'none' : 'auto'
+                    }}
+                  >
+                    <FaChevronLeft className="text-xs" />
+                  </button>
+
+                  <button
+                    onClick={nextSlide}
+                    className="sm:hidden absolute right-2 top-1/2 transform -translate-y-1/2 -translate-y-8 bg-white/90 hover:bg-white text-indigo-600 rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-20 min-w-[32px] min-h-[32px] flex items-center justify-center"
+                    disabled={currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1}
+                    style={{ 
+                      opacity: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 0.4 : 1,
+                      pointerEvents: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 'none' : 'auto'
+                    }}
+                  >
+                    <FaChevronRight className="text-xs" />
+                  </button>
                 
                 </div>
 
@@ -172,30 +191,9 @@ const prevSlide = () => {
                   <FaChevronRight className="text-base" />
                 </button>
 
-                {/* Mobile Navigation Buttons - Positioned relative to video section */}
-                <button
-                  onClick={prevSlide}
-                  className="sm:hidden absolute left-1 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-indigo-600 rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
-                  disabled={currentSlide === 0}
-                  style={{ 
-                    opacity: currentSlide === 0 ? 0.4 : 1,
-                    pointerEvents: currentSlide === 0 ? 'none' : 'auto'
-                  }}
-                >
-                  <FaChevronLeft className="text-sm" />
-                </button>
-
-                <button
-                  onClick={nextSlide}
-                  className="sm:hidden absolute right-1 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-indigo-600 rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
-                  disabled={currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1}
-                  style={{ 
-                    opacity: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 0.4 : 1,
-                    pointerEvents: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 'none' : 'auto'
-                  }}
-                >
-                  <FaChevronRight className="text-sm" />
-                </button>
+                <p className="text-base md:text-2xl text-gray-700 mt-8 max-w-3xl mx-auto leading-relaxed">
+                   The lion sounds brave, the teddy sounds gentle—inviting children into a magical, fairy-tale-like experience.
+                 </p>
 
                 {/* Enhanced Carousel Indicators */}
                 <div className="flex justify-center mt-4 sm:mt-8 gap-3">
