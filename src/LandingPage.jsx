@@ -158,7 +158,7 @@ const prevSlide = () => {
                 {/* Enhanced Navigation Buttons - Desktop */}
                 <button
                   onClick={prevSlide}
-                  className="hidden sm:block absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-indigo-600 rounded-full p-2 shadow-md transition-all duration-300 hover:scale-105 border border-indigo-100 backdrop-blur-sm"
+                  className=" sm:block absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-indigo-600 rounded-full p-2 shadow-md transition-all duration-300 hover:scale-105 border border-indigo-100 backdrop-blur-sm"
                   disabled={currentSlide === 0}
                 >
                   <FaChevronLeft className="text-base" />
@@ -166,7 +166,7 @@ const prevSlide = () => {
 
                 <button
                   onClick={nextSlide}
-                  className="hidden sm:block absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-indigo-600 rounded-full p-2 shadow-md transition-all duration-300 hover:scale-105 border border-indigo-100 backdrop-blur-sm"
+                  className=" sm:block absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-indigo-600 rounded-full p-2 shadow-md transition-all duration-300 hover:scale-105 border border-indigo-100 backdrop-blur-sm"
                   disabled={currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1}
                 >
                   <FaChevronRight className="text-base" />
