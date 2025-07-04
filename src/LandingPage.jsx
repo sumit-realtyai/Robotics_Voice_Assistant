@@ -172,31 +172,31 @@ const prevSlide = () => {
                   <FaChevronRight className="text-base" />
                 </button>
 
-                {/* Mobile Navigation Buttons - Positioned at screen edges */}
-                {/* <button
+                {/* Mobile Navigation Buttons - Positioned relative to video section */}
+                <button
                   onClick={prevSlide}
-                  className="sm:hidden fixed left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-indigo-600 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  className="sm:hidden absolute left-1 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-indigo-600 rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
                   disabled={currentSlide === 0}
                   style={{ 
-                    opacity: currentSlide === 0 ? 0.3 : 1,
+                    opacity: currentSlide === 0 ? 0.4 : 1,
                     pointerEvents: currentSlide === 0 ? 'none' : 'auto'
                   }}
                 >
-                  <FaChevronLeft className="text-lg" />
+                  <FaChevronLeft className="text-sm" />
                 </button>
 
                 <button
                   onClick={nextSlide}
-                  className="sm:hidden fixed right-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-indigo-600 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  className="sm:hidden absolute right-1 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-indigo-600 rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
                   disabled={currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1}
                   style={{ 
-                    opacity: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 0.3 : 1,
+                    opacity: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 0.4 : 1,
                     pointerEvents: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 'none' : 'auto'
                   }}
                 >
-                  <FaChevronRight className="text-lg" />
+                  <FaChevronRight className="text-sm" />
                 </button>
- */}
+
                 {/* Enhanced Carousel Indicators */}
                 <div className="flex justify-center mt-4 sm:mt-8 gap-3">
                  {Array.from({ length: Math.ceil(carouselVideos.length / videosPerSlide) }).map((_, index) => (
