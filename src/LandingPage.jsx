@@ -86,13 +86,13 @@ const prevSlide = () => {
                 Talkypies
               </h1>
             </div>
-            <p className="text-lg md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed">
              A collection of AI-powered soft toys that talk in their own character voices—creating warm, playful conversations kids love.
             </p>
             
             {/* Enhanced Video Carousel Section */}
             <div className="w-full mb-12  sm:px-4 md:px-8">
-              <div className="relative bg-gradient-to-r from-indigo-100 via-purple-50 to-pink-100 rounded-3xl py-8 sm:px-8 shadow-2xl"
+              <div className="relative bg-gradient-to-r from-indigo-100 via-purple-50 to-pink-100 rounded-3xl py-8 pt-0 sm:pt-8 sm:px-8 shadow-2xl"
                 onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
                     onTouchMove={(e) => setTouchEndX(e.touches[0].clientX)}
                     onTouchEnd={() => {
@@ -149,7 +149,7 @@ const prevSlide = () => {
                       </div>
                     ))}
                   </div>
-                  <p className="text-lg md:text-2xl text-gray-700 mt-8 max-w-3xl mx-auto leading-relaxed">
+                  <p className="text-base md:text-2xl text-gray-700 mt-8 max-w-3xl mx-auto leading-relaxed">
                    The lion sounds brave, the teddy sounds gentle—inviting children into a magical, fairy-tale-like experience.
                  </p>
                 
@@ -173,7 +173,7 @@ const prevSlide = () => {
                 </button>
 
                 {/* Enhanced Carousel Indicators */}
-                <div className="flex justify-center mt-8 gap-3">
+                <div className="flex justify-center mt-4 sm:mt-8 gap-3">
                  {Array.from({ length: Math.ceil(carouselVideos.length / videosPerSlide) }).map((_, index) => (
                     <button
                       key={index}
