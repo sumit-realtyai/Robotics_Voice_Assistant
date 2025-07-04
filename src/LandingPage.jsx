@@ -155,7 +155,7 @@ const prevSlide = () => {
                 
                 </div>
 
-                {/* Enhanced Navigation Buttons */}
+                {/* Enhanced Navigation Buttons - Desktop */}
                 <button
                   onClick={prevSlide}
                   className="hidden sm:block absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-indigo-600 rounded-full p-2 shadow-md transition-all duration-300 hover:scale-105 border border-indigo-100 backdrop-blur-sm"
@@ -170,6 +170,31 @@ const prevSlide = () => {
                   disabled={currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1}
                 >
                   <FaChevronRight className="text-base" />
+                </button>
+
+                {/* Mobile Navigation Buttons - Positioned at screen edges */}
+                <button
+                  onClick={prevSlide}
+                  className="sm:hidden fixed left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-indigo-600 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  disabled={currentSlide === 0}
+                  style={{ 
+                    opacity: currentSlide === 0 ? 0.3 : 1,
+                    pointerEvents: currentSlide === 0 ? 'none' : 'auto'
+                  }}
+                >
+                  <FaChevronLeft className="text-lg" />
+                </button>
+
+                <button
+                  onClick={nextSlide}
+                  className="sm:hidden fixed right-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-indigo-600 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 border border-indigo-200 backdrop-blur-sm z-10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  disabled={currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1}
+                  style={{ 
+                    opacity: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 0.3 : 1,
+                    pointerEvents: currentSlide === Math.ceil(carouselVideos.length / videosPerSlide) - 1 ? 'none' : 'auto'
+                  }}
+                >
+                  <FaChevronRight className="text-lg" />
                 </button>
 
                 {/* Enhanced Carousel Indicators */}
