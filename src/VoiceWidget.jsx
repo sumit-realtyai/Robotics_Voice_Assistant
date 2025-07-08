@@ -187,13 +187,13 @@ const VoiceWidget = () => {
       setAssistantError("");
       stopErrorAudioInterval(); // Stop any previous error audio
 
-      let customPrompt = `
-          Child's Interests & Preferences:
-          ${interests}
-
-          Current Learning in School:
-          ${currentLearning}
-        `;
+    let customPrompt = ``;
+      if (interests ) {
+        customPrompt += `Child's Interests & Preferences: ${interests}\n`;
+        }
+      if (currentLearning) {
+        customPrompt += `Current Learning in School: ${currentLearning}\n`;
+      }
 
         // https://api-talkypies.vercel.app
       const response = await axios.post(
