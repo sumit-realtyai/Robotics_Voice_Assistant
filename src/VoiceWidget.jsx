@@ -63,7 +63,7 @@ const VoiceWidget = () => {
 
   // Get VAPI keys from localStorage or URL params
   const vapiPrivateKey =
-    queryParams.get("vapiKey") || localStorage.getItem("vapiKey") || "";
+    queryParams.get("vapiKey") || localStorage.getItem("vapiKey") ;
   const vapiPublicKey =
     queryParams.get("vapiPublicKey") ||
     localStorage.getItem("vapiPublicKey") ||
@@ -197,7 +197,7 @@ const VoiceWidget = () => {
 
         // https://api-talkypies.vercel.app
       const response = await axios.post(
-        "https://api-talkypies.vercel.app/vapi/create-assistant",
+        "http://localhost:5000/vapi/create-assistant",
         {
           childName,
           customPrompt,

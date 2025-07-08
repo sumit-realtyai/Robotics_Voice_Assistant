@@ -18,9 +18,9 @@ export default function StartTalkypie() {
     e.preventDefault();
     
     // Get keys from localStorage (managed in Settings)
-    const porcupineKey = localStorage.getItem('porcupineKey') || '';
-    const vapiKey = localStorage.getItem('vapiKey') || '';
-    const vapiPublicKey = localStorage.getItem('vapiPublicKey') || '';
+    const porcupineKey = localStorage.getItem('porcupineKey');
+    const vapiKey = localStorage.getItem('vapiKey');
+    const vapiPublicKey = localStorage.getItem('vapiPublicKey');
     const toyName = localStorage.getItem('toyName') || 'Talkypie';
     
     // Check if required keys are available
