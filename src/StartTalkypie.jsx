@@ -24,11 +24,11 @@ export default function StartTalkypie() {
     const toyName = localStorage.getItem('toyName') || 'Talkypie';
     
     // Check if required keys are available
-    if (!porcupineKey ) {
-      alert('Please configure atleast Porcupine API keys in Settings before starting.');
-      navigate('/settings');
-      return;
-    }
+    // if (!porcupineKey ) {
+    //   alert('Please configure atleast Porcupine API keys in Settings before starting.');
+    //   navigate('/settings');
+    //   return;
+    // }
     
     const queryParams = new URLSearchParams({
       ...formData,
