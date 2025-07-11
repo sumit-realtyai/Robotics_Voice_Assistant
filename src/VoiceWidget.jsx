@@ -55,6 +55,7 @@ const VoiceWidget = () => {
   const [assistantStatus, setAssistantStatus] = useState("pending"); // pending, created, failed
   const [isCreatingAssistant, setIsCreatingAssistant] = useState(false);
   const [assistantError, setAssistantError] = useState("");
+  const [finalPrompt, setFinalPrompt] = useState("");
 
   const isAssistantOnRef = useRef(isAssistantOn);
   const inactivityTimeoutRef = useRef(null);
@@ -210,10 +211,12 @@ const VoiceWidget = () => {
 
       console.log("Assistant created:", response);
       const newAssistantId = response.data.assistantId;
+      const receivedFinalPrompt = response.data.finalPrompt;
 
       // Initialize VAPI with public key for client SDK
       vapi = new Vapi(vapiPublicKey);
       setAssistantId(newAssistantId);
+      setFinalPrompt(receivedFinalPrompt || "");
       setAssistantStatus("created");
       setIsLoading(true);
       //  const audio = new Audio("/connect.mp3");
@@ -725,91 +728,113 @@ const introAudio = async () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl mb-20 md:mb-0">
-      <div className="space-y-4">
-        {/* Assistant Ready Indicator */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-          <div className="flex items-center gap-2">
-            <FaCheckCircle className="text-green-500 text-lg" />
-            <p className="text-green-700 text-sm font-medium">
-              {toyName} AI Assistant ready for {childName}!
+    <div className="max-w-4xl mx-auto mb-20 md:mb-0 space-y-6">
+      {/* Main Voice Widget */}
+      <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl">
+        <div className="space-y-4">
+          {/* Assistant Ready Indicator */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2">
+              <FaCheckCircle className="text-green-500 text-lg" />
+              <p className="text-green-700 text-sm font-medium">
+                {toyName} AI Assistant ready for {childName}!
+              </p>
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-bold text-center text-gray-900">
+            Voice Assistant Status
+          </h1>
+          <div className="space-y-2 text-lg">
+            <p className="text-gray-700">
+              Listening:{" "}
+              <span
+                className={`font-semibold ${
+                  isListening ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {isListening ? "Active" : "Inactive"}
+              </span>
+            </p>
+            <p className="text-gray-700">
+              Wake Word Detection:{" "}
+              <span
+                className={`font-semibold ${
+                  wakeWordDetected ? "text-green-600" : "text-yellow-600"
+                }`}
+              >
+                {wakeWordDetected
+                  ? "Detected! Vapi is ready."
+                  : "Waiting for 'Hi Coco'..."}
+              </span>
+            </p>
+            <p className="text-gray-700">
+              ESP32 Connection:{" "}
+              <span
+                className={`font-semibold flex items-center gap-1 ${
+                  isConnected ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {isConnected ? (
+                  <>
+                    <FaWifi className="text-sm" />
+                    Connected & Listening
+                  </>
+                ) : (
+                  <>
+                    <MdWifiOff className="text-sm" />
+                    Not Connected
+                  </>
+                )}
+              </span>
             </p>
           </div>
-        </div>
 
-        <h1 className="text-2xl font-bold text-center text-gray-900">
-          Voice Assistant Status
-        </h1>
-        <div className="space-y-2 text-lg">
-          <p className="text-gray-700">
-            Listening:{" "}
-            <span
-              className={`font-semibold ${
-                isListening ? "text-green-600" : "text-red-600"
+          <div className="flex justify-center">
+            <button
+              
+              onClick={toggleAssistant}
+              className={`rounded-full p-4 text-white shadow-lg transition-transform duration-300 ease-in-out ${
+                isAssistantOn
+                  ? "bg-red-600 hover:bg-red-700"
+                  : isLoading
+                  ? "bg-yellow-500"
+                  : "bg-green-600 hover:bg-green-700"
               }`}
+              disabled={isLoading}
             >
-              {isListening ? "Active" : "Inactive"}
-            </span>
-          </p>
-          <p className="text-gray-700">
-            Wake Word Detection:{" "}
-            <span
-              className={`font-semibold ${
-                wakeWordDetected ? "text-green-600" : "text-yellow-600"
-              }`}
-            >
-              {wakeWordDetected
-                ? "Detected! Vapi is ready."
-                : "Waiting for 'Hi Coco'..."}
-            </span>
-          </p>
-          <p className="text-gray-700">
-            ESP32 Connection:{" "}
-            <span
-              className={`font-semibold flex items-center gap-1 ${
-                isConnected ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {isConnected ? (
-                <>
-                  <FaWifi className="text-sm" />
-                  Connected & Listening
-                </>
+              {isLoading ? (
+                <FiLoader className="w-8 h-8 animate-spin" />
+              ) : isAssistantOn ? (
+                <FiPhoneOff className="w-8 h-8" />
               ) : (
-                <>
-                  <MdWifiOff className="text-sm" />
-                  Not Connected
-                </>
+                <FiPhoneCall className="w-8 h-8 animate-pulse" />
               )}
-            </span>
-          </p>
-        </div>
-
-        <div className="flex justify-center">
-          <button
-            
-            onClick={toggleAssistant}
-            className={`rounded-full p-4 text-white shadow-lg transition-transform duration-300 ease-in-out ${
-              isAssistantOn
-                ? "bg-red-600 hover:bg-red-700"
-                : isLoading
-                ? "bg-yellow-500"
-                : "bg-green-600 hover:bg-green-700"
-            }`}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <FiLoader className="w-8 h-8 animate-spin" />
-            ) : isAssistantOn ? (
-              <FiPhoneOff className="w-8 h-8" />
-            ) : (
-              <FiPhoneCall className="w-8 h-8 animate-pulse" />
-            )}
-          </button>
-
-
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Final Prompt Display */}
+      {finalPrompt && (
+        <div className="bg-white rounded-xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <FaRobot className="text-2xl text-indigo-600" />
+            <h2 className="text-xl font-bold text-gray-900">AI Assistant Instructions</h2>
+          </div>
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-200">
+            <p className="text-sm text-gray-600 mb-2 font-medium">
+              This is how your AI assistant has been configured to interact with {childName}:
+            </p>
+            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+              <pre className="text-sm text-gray-800 whitespace-pre-wrap font-mono leading-relaxed">
+                {finalPrompt}
+              </pre>
+            </div>
+          </div>
+
+        </div>
+      )}
     </div>
   );
 };
