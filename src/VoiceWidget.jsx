@@ -61,6 +61,12 @@ const VoiceWidget = () => {
   const inactivityTimeoutRef = useRef(null);
   const wakeUpIntervalRef = useRef(null);
   const wakeUpAudioRef = useRef(null);
+  const deepgramSocketRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+
+  const DEEPGRAM_API_KEY = "2434d902a6a617075faae7044e92fca628228f9a";
+
 
   // Get VAPI keys from localStorage or URL params
   const vapiPrivateKey =
@@ -84,7 +90,7 @@ const VoiceWidget = () => {
 
   const porcupineKeyword = {
     publicPath: "assets/Hi-coco_en_wasm_v3_0_0.ppn",
-    label: "Hi coco",
+    label: "Hello coco",
   };
 
   const porcupineModel = {
@@ -251,14 +257,7 @@ const VoiceWidget = () => {
 
   useEffect(() => {
     if (assistantId && assistantStatus === "created") {
-      //Light on function
-      // const lightOn = async () => {
-      //   console.log("Intro audio finished. Connecting to Eva...");
-      //   await sendBlinkCommand();
-      //   // await new Promise(resolve => setTimeout(resolve, 5000));
-      //   toggleAssistant(); // Start the assistant if it was created successfully
-      // };
-      // lightOn();
+      
 
       toggleAssistant(); // Start the assistant if it was created successfully
        
@@ -346,73 +345,129 @@ const VoiceWidget = () => {
     return () => release();
   }, [init, start, release, isFormSubmitted, porcupineKey, assistantStatus]);
 
-  
-  useEffect(() => {
-    if (!isFormSubmitted || assistantStatus !== "created") return;
-    console.log("line 11111111111111");
-    const audio = new Audio("/wake up.mp3");
-    let intervalId = null;
-    
-    console.log("inside wake up effect", isLoading, "  ",assistantStatus);
-    if (mediaDetection || wakeWordDetected || isAssistantOn || isAssistantOnRef.current || isLoading) {
-      
-      audio.currentTime = 0;
-      console.log(
-        "Wake word detected or user manually started vapi — paused audio immediately."
-      );
-      clearInterval(intervalId);
-      return;
-    }
-
-    audio.loop = false;
-    console.log("line 22222222222222");
-    audio.play().catch((e) => {
-      console.warn("Audio play failed:", e);
-    });
-    wakeUpAudioRef.current = audio;
-    console.log("line 33333333333333");
-
-    const playAudio = () => {
-      if (!audio.paused) return;
-      console.log("line 55555555555555");
-      audio.currentTime = 0;
-      audio.play().catch((e) => {
-        console.warn("Audio play failed:", e);
-      });
-      wakeUpAudioRef.current = audio;
-
-      console.log("line 66666666666666");
-      console.log("Playing starting audio...");
-    };
-
-    intervalId = setInterval(() => {
-      if (!wakeWordDetected && !isAssistantOnRef.current) {
-        
-        playAudio();
-      }
-    }, 10000);
-    
-
-    return () => {
-      console.log("Cleaning up starting audio interval");
-      audio?.pause();
-      clearInterval(intervalId);
-      if (!audio.paused) {
-        console.log("line 99999999999999999999999999");
-        audio?.pause();
-        console.log("line 10000000000000000000000000000");
-      }
+  // new setup for deepgram and wake word
 
 
-    };
-  }, [
-    isFormSubmitted,
-    wakeWordDetected,
-    mediaDetection,
-    isAssistantOn,
-    assistantStatus,
+
+useEffect(() => {
+  if (
+    !isFormSubmitted ||
+    assistantStatus !== "created" ||
+    mediaDetection ||
+    wakeWordDetected ||
+    isAssistantOn ||
+    isAssistantOnRef.current ||
     isLoading
-  ]);
+  ) return;
+
+  console.log("🔁 Assistant idle — Starting wake audio + Deepgram");
+
+  // === Wake up.mp3 Setup ===
+  const audio = new Audio("/wake up.mp3");
+  audio.loop = false;
+
+  const playAudio = () => {
+    if (!audio.paused) return;
+    console.log("🔊 Replaying wake up.mp3...");
+    audio.currentTime = 0;
+    audio.play().catch((e) => console.warn("Audio play failed:", e));
+    wakeUpAudioRef.current = audio;
+  };
+
+  // Play initially
+  audio.play().catch((e) => console.warn("Initial play failed:", e));
+  wakeUpAudioRef.current = audio;
+
+  // Loop every 10s
+  const intervalId = setInterval(() => {
+    if (!wakeWordDetected && !isAssistantOnRef.current) {
+      playAudio();
+    }
+  }, 10000);
+
+  // === Deepgram Setup ===
+  
+  const initializeDeepgram = async () => {
+  try {
+    // Cleanup
+    // deepgramSocketRef.current?.close?.();
+    // if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
+    //     mediaRecorderRef.current.stop();
+    //   }
+    // mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+
+    // Create WebSocket
+    const socket = new WebSocket(
+      `wss://api.deepgram.com/v1/listen?punctuate=true&language=en`,
+      ["token", DEEPGRAM_API_KEY]
+    );
+    deepgramSocketRef.current = socket;
+
+    socket.onopen = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStreamRef.current = stream;
+
+        const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+        mediaRecorderRef.current = recorder;
+
+        recorder.ondataavailable = e => e.data.size > 0 && socket.readyState === 1 && socket.send(e.data);
+        recorder.start(250);
+        console.log("🎙️ Deepgram listening...");
+      } catch (err) {
+        console.error("Mic error:", err);
+        setErrorMessage("Microphone error: " + err.message);
+      }
+    };
+
+    socket.onmessage = ({ data }) => {
+      if (isAssistantOnRef.current) return;
+
+      const transcript = JSON.parse(data)?.channel?.alternatives?.[0]?.transcript?.toLowerCase();
+      const triggers = ["help me", "hi eva", "eva", "hello eva", "hey eva", "hello" , "hi coco", "coco", "hello coco"];
+      if (transcript && triggers.some(w => transcript.includes(w))) {
+        console.log("🟢 Wake word:", transcript);
+        setWakeWordDetected(true); 
+        triggerVapi();
+        socket.close();
+        mediaRecorderRef.current?.stop();
+        mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+      }
+    };
+
+    socket.onerror = e => setErrorMessage("Deepgram error.");
+    socket.onclose = () => console.log("🔌 Deepgram closed");
+  } catch (e) {
+    console.error("Deepgram init failed:", e);
+  }
+};
+
+  initializeDeepgram();
+
+  // === Cleanup Both Audio & Deepgram ===
+   return () => {
+  console.log("🧹 Cleanup Deepgram + Audio");
+  audio.pause?.();
+  clearInterval(intervalId);
+  deepgramSocketRef.current?.close?.();
+  if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+     }
+  mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+};
+
+}, [
+  isFormSubmitted,
+  assistantStatus,
+  mediaDetection,
+  wakeWordDetected,
+  isAssistantOn,
+  isLoading
+]);
+
+
+
+
 
   useEffect(() => {
     if (keywordDetection) {
@@ -474,32 +529,6 @@ const introAudio = async () => {
       // direct call toggleAssistant and inside it call introAudio fun
       toggleAssistant();
 
-      // const audio = new Audio("/connect.mp3");
-      // audio.play();
-
-      // audio.onended = async () => {
-      //   console.log("Intro audio finished. Connecting to Eva...");
-      //   await sendBlinkCommand();
-      //   toggleAssistant();
-      // };
-
-      // let intervalId;
-      // let repeatedAudio;
-
-      // intervalId = setInterval(() => {
-      //   repeatedAudio = new Audio(audio.src);
-      //   repeatedAudio.play();
-      //   console.log("Playing intro audio...");
-      // }, 5000);
-
-      // vapi.once("speech-start", async () => {
-      //   repeatedAudio.pause();
-      //   console.log("speech-start called only once");
-      //   console.log("Assistant has started speaking.");
-      //   clearInterval(intervalId);
-      //   sendOnCommand();
-      //   console.log("Eva connected. Stopped repeating audio.");
-      // });
 
       return () => {
         // clearInterval(intervalId);
@@ -765,7 +794,7 @@ const introAudio = async () => {
               >
                 {wakeWordDetected
                   ? "Detected! Vapi is ready."
-                  : "Waiting for 'Hi Coco'..."}
+                  : "Waiting for 'Hello coco'..."}
               </span>
             </p>
             <p className="text-gray-700">
