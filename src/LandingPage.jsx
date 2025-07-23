@@ -245,10 +245,10 @@ const prevSlide = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Why Choose Talkypies?
+              PlayOS™ — The Brain Behind Talkypies
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Transform your child's development with proven benefits that last a lifetime.
+              PlayOS™ is our proprietary AI engine built for children — enabling safe, and educational conversations that balance fun, learning, and emotional safety.
             </p>
           </div>
           
@@ -258,9 +258,9 @@ const prevSlide = () => {
               <div className="flex items-center justify-center w-16 h-16 bg-red-500 rounded-full mb-6 mx-auto">
                 <MdScreenLockPortrait className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Reduce Screen Time</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Max Fun Engine™</h3>
               <p className="text-gray-600 text-center mb-6">
-                Replace passive screen consumption with active, engaging conversations that stimulate creativity and imagination.
+                Brings characters to life with real personalities, jokes, songs, and mini games. Detects mood and responds with playful, engaging conversations that spark imagination.
               </p>
             </div>
 
@@ -269,9 +269,9 @@ const prevSlide = () => {
               <div className="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-6 mx-auto">
                 <FaLanguage className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Improve Language Skills</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">LearnPlay Engine™</h3>
               <p className="text-gray-600 text-center mb-6">
-                Enhance vocabulary, pronunciation, and communication skills through natural, adaptive conversations.
+                Turns learning into fun with stories, games, and vocabulary boosts. Supports school subjects while building confidence and curiosity—plus reports for parents.
               </p>
             </div>
 
@@ -280,9 +280,9 @@ const prevSlide = () => {
               <div className="flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-6 mx-auto">
                 <FaGraduationCap className="text-3xl text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Educational Growth</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">SafePlay Protocol™</h3>
               <p className="text-gray-600 text-center mb-6">
-                Make learning fun with interactive lessons in math, science, history, and more, tailored to your child's level.
+                Built-in safety from the ground up — no chat storage, full parental controls, and expert-backed design for emotionally safe, private play.
               </p>
             </div>
           </div>
