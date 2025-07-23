@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaRobot, FaComments, FaMicrophoneAlt, FaKey, FaSave, FaEdit, FaBluetooth, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaRobot, FaComments, FaMicrophoneAlt, FaKey, FaSave, FaEdit, FaBluetooth, FaCheck, FaTimes, FaClock, FaMoon } from 'react-icons/fa';
 import { MdToys } from 'react-icons/md';
 
 const Settings = () => {
@@ -12,7 +12,11 @@ const Settings = () => {
     porcupineKey: '',
     vapiPrivateKey: '',
     vapiPublicKey: '',
-    esp32Key: ''
+    esp32Key: '',
+    customPrompt: '',
+    dailyUsageLimit: '30',
+    quietHoursStart: '20:00',
+    quietHoursEnd: '07:00'
   });
   const [tempSettings, setTempSettings] = useState({ ...settings });
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -25,6 +29,10 @@ const Settings = () => {
     const savedVapiPrivateKey = localStorage.getItem('vapiKey') || '';
     const savedVapiPublicKey = localStorage.getItem('vapiPublicKey') || '';
     const savedEsp32Key = localStorage.getItem('esp32Key') || '';
+    const savedCustomPrompt = localStorage.getItem('customPrompt') || '';
+    const savedDailyUsageLimit = localStorage.getItem('dailyUsageLimit') || '30';
+    const savedQuietHoursStart = localStorage.getItem('quietHoursStart') || '20:00';
+    const savedQuietHoursEnd = localStorage.getItem('quietHoursEnd') || '07:00';
 
     setSelectedAssistant(savedAssistant);
     setSettings({
@@ -32,14 +40,22 @@ const Settings = () => {
       porcupineKey: savedPorcupineKey,
       vapiPrivateKey: savedVapiPrivateKey,
       vapiPublicKey: savedVapiPublicKey,
-      esp32Key: savedEsp32Key
+      esp32Key: savedEsp32Key,
+      customPrompt: savedCustomPrompt,
+      dailyUsageLimit: savedDailyUsageLimit,
+      quietHoursStart: savedQuietHoursStart,
+      quietHoursEnd: savedQuietHoursEnd
     });
     setTempSettings({
       toyName: savedToyName,
       porcupineKey: savedPorcupineKey,
       vapiPrivateKey: savedVapiPrivateKey,
       vapiPublicKey: savedVapiPublicKey,
-      esp32Key: savedEsp32Key
+      esp32Key: savedEsp32Key,
+      customPrompt: savedCustomPrompt,
+      dailyUsageLimit: savedDailyUsageLimit,
+      quietHoursStart: savedQuietHoursStart,
+      quietHoursEnd: savedQuietHoursEnd
     });
   }, []);
 
@@ -66,7 +82,11 @@ const Settings = () => {
       porcupineKey: 'porcupineKey',
       vapiPrivateKey: 'vapiKey',
       vapiPublicKey: 'vapiPublicKey',
-      esp32Key: 'esp32Key'
+      esp32Key: 'esp32Key',
+      customPrompt: 'customPrompt',
+      dailyUsageLimit: 'dailyUsageLimit',
+      quietHoursStart: 'quietHoursStart',
+      quietHoursEnd: 'quietHoursEnd'
     };
     
     localStorage.setItem(fieldMap[fieldName], tempSettings[fieldName]);
@@ -94,6 +114,10 @@ const Settings = () => {
     localStorage.setItem('vapiKey', tempSettings.vapiPrivateKey);
     localStorage.setItem('vapiPublicKey', tempSettings.vapiPublicKey);
     localStorage.setItem('esp32Key', tempSettings.esp32Key);
+    localStorage.setItem('customPrompt', tempSettings.customPrompt);
+    localStorage.setItem('dailyUsageLimit', tempSettings.dailyUsageLimit);
+    localStorage.setItem('quietHoursStart', tempSettings.quietHoursStart);
+    localStorage.setItem('quietHoursEnd', tempSettings.quietHoursEnd);
 
     setSettings({ ...tempSettings });
     setEditingField(null);
@@ -301,6 +325,225 @@ const Settings = () => {
             </div>
           </div>
 
+          {/* Advanced Customization */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+            <div className="flex items-center gap-3 mb-6">
+              <FaEdit className="text-2xl text-purple-600" />
+              <h3 className="text-xl font-bold text-gray-900">Advanced Customization</h3>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center gap-2">
+                    <FaEdit className="text-purple-600" />
+                    <span>Custom Prompt</span>
+                  </div>
+                </label>
+                <div className="bg-purple-100 rounded-lg p-3 mb-2">
+                  <p className="text-sm text-purple-800 font-medium mb-1">✍ Example:</p>
+                  <p className="text-sm text-purple-700">
+                    Always speak in a gentle, encouraging tone. Focus on building confidence and ask open-ended questions to spark creativity.
+                  </p>
+                </div>
+                {editingField === 'customPrompt' ? (
+                  <div className="flex flex-col gap-2">
+                    <textarea
+                      name="customPrompt"
+                      value={tempSettings.customPrompt}
+                      onChange={handleInputChange}
+                      onBlur={() => handleSaveField('customPrompt')}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.ctrlKey) handleSaveField('customPrompt');
+                        if (e.key === 'Escape') handleCancelEdit('customPrompt');
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="Enter custom instructions for the AI assistant..."
+                      rows="4"
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleSaveField('customPrompt')}
+                        className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 text-sm"
+                      >
+                        <FaCheck className="text-xs" />
+                      </button>
+                      <button
+                        onClick={() => handleCancelEdit('customPrompt')}
+                        className="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300 text-sm"
+                      >
+                        <FaTimes className="text-xs" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => setEditingField('customPrompt')}
+                    className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900 text-sm cursor-pointer hover:bg-gray-100 transition-all duration-300 border border-transparent hover:border-gray-300 min-h-[100px] whitespace-pre-wrap"
+                  >
+                    {tempSettings.customPrompt || <span className="text-gray-400 italic">Click to add custom instructions for the AI assistant...</span>}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Usage Control */}
+          <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-200">
+            <div className="flex items-center gap-3 mb-6">
+              <FaClock className="text-2xl text-green-600" />
+              <h3 className="text-xl font-bold text-gray-900">Usage Control</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center gap-2">
+                    <FaClock className="text-green-600" />
+                    <span>Daily Usage Limit (minutes)</span>
+                  </div>
+                </label>
+                {editingField === 'dailyUsageLimit' ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      name="dailyUsageLimit"
+                      value={tempSettings.dailyUsageLimit}
+                      onChange={handleInputChange}
+                      onBlur={() => handleSaveField('dailyUsageLimit')}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveField('dailyUsageLimit');
+                        if (e.key === 'Escape') handleCancelEdit('dailyUsageLimit');
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="30"
+                      min="1"
+                      max="480"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => handleSaveField('dailyUsageLimit')}
+                      className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300"
+                    >
+                      <FaCheck className="text-sm" />
+                    </button>
+                    <button
+                      onClick={() => handleCancelEdit('dailyUsageLimit')}
+                      className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300"
+                    >
+                      <FaTimes className="text-sm" />
+                    </button>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => setEditingField('dailyUsageLimit')}
+                    className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900 font-mono text-sm cursor-pointer hover:bg-gray-100 transition-all duration-300 border border-transparent hover:border-gray-300"
+                  >
+                    {tempSettings.dailyUsageLimit} minutes/day
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center gap-2">
+                    <FaMoon className="text-green-600" />
+                    <span>Quiet Hours Start</span>
+                  </div>
+                </label>
+                {editingField === 'quietHoursStart' ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      name="quietHoursStart"
+                      value={tempSettings.quietHoursStart}
+                      onChange={handleInputChange}
+                      onBlur={() => handleSaveField('quietHoursStart')}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveField('quietHoursStart');
+                        if (e.key === 'Escape') handleCancelEdit('quietHoursStart');
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => handleSaveField('quietHoursStart')}
+                      className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300"
+                    >
+                      <FaCheck className="text-sm" />
+                    </button>
+                    <button
+                      onClick={() => handleCancelEdit('quietHoursStart')}
+                      className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300"
+                    >
+                      <FaTimes className="text-sm" />
+                    </button>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => setEditingField('quietHoursStart')}
+                    className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900 font-mono text-sm cursor-pointer hover:bg-gray-100 transition-all duration-300 border border-transparent hover:border-gray-300"
+                  >
+                    {tempSettings.quietHoursStart}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <div className="flex items-center gap-2">
+                    <FaMoon className="text-green-600" />
+                    <span>Quiet Hours End</span>
+                  </div>
+                </label>
+                {editingField === 'quietHoursEnd' ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      name="quietHoursEnd"
+                      value={tempSettings.quietHoursEnd}
+                      onChange={handleInputChange}
+                      onBlur={() => handleSaveField('quietHoursEnd')}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveField('quietHoursEnd');
+                        if (e.key === 'Escape') handleCancelEdit('quietHoursEnd');
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => handleSaveField('quietHoursEnd')}
+                      className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300"
+                    >
+                      <FaCheck className="text-sm" />
+                    </button>
+                    <button
+                      onClick={() => handleCancelEdit('quietHoursEnd')}
+                      className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300"
+                    >
+                      <FaTimes className="text-sm" />
+                    </button>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={() => setEditingField('quietHoursEnd')}
+                    className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900 font-mono text-sm cursor-pointer hover:bg-gray-100 transition-all duration-300 border border-transparent hover:border-gray-300"
+                  >
+                    {tempSettings.quietHoursEnd}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="mt-4 bg-green-100 border border-green-200 rounded-lg p-3">
+              <p className="text-green-800 text-sm">
+                <strong>Usage Control:</strong> Set daily limits and quiet hours to help manage your child's interaction time with Talkypie. 
+                During quiet hours, the assistant will be less responsive and encourage rest time.
+              </p>
+            </div>
+          </div>
+
           {/* Help Section */}
           <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
             <h3 className="text-lg font-bold text-gray-900 mb-3">Need Help?</h3>
@@ -309,6 +552,9 @@ const Settings = () => {
               <p><strong>Porcupine Key:</strong> Required for wake word detection ("Hi Eva").</p>
               <p><strong>VAPI Keys:</strong> Private key for creating assistants, public key for client SDK.</p>
               <p><strong>ESP32 Key:</strong> Used for connecting to your physical Talkypie device.</p>
+              <p><strong>Custom Prompt:</strong> Add specific instructions or personality traits for the AI assistant.</p>
+              <p><strong>Daily Usage Limit:</strong> Maximum minutes per day your child can interact with Talkypie.</p>
+              <p><strong>Quiet Hours:</strong> Time period when Talkypie will be in sleep mode or less responsive.</p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
                 <p className="text-blue-800 font-medium">💡 Quick Edit Tips:</p>
                 <ul className="text-blue-700 text-xs mt-2 space-y-1">
