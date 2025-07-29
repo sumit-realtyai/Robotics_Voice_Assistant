@@ -12,6 +12,9 @@ const Voiceflow = React.lazy(() => import("./voiceFlow.jsx"));
 const Sessions = React.lazy(() => import("./Sessions.jsx"));
 const Settings = React.lazy(() => import("./Settings.jsx"));
 const PaymentPage = React.lazy(() => import("./components/PaymentPage.jsx"));
+const DeepgramFun = React.lazy(() => import("./deepgram.jsx"));
+const DeepGramVapi = React.lazy(() => import("./deepgram-vapi.jsx"));
+
 
 function App() {
   return (
@@ -31,6 +34,9 @@ function App() {
                 <Route path="/sessions" element={<Sessions />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/deepgram" element={<DeepgramFun />} />
+                <Route path="/deepgram-vapi" element={<DeepGramVapi />} />
+                
               </Routes>
             </Suspense>
           </div>

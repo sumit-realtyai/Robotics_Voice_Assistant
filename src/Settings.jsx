@@ -61,6 +61,9 @@ const Settings = () => {
 
   const handleApiChange = (e) => {
     const selected = e.target.value;
+    if(selected === "deepgram+vapi") {
+      navigate("/deepgram");
+    }
     if (selected) {
       localStorage.setItem('selectedAssistant', selected);
       setSelectedAssistant(selected);
@@ -280,6 +283,7 @@ const Settings = () => {
               <option value="vapi">VAPI</option>
               <option value="synthflow">Synthflow</option>
               <option value="voiceflow">Voiceflow</option>
+              <option value="deepgram+vapi">deepgram+vapi</option>
             </select>
           </div>
 
