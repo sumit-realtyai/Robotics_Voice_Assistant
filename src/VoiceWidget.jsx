@@ -618,6 +618,17 @@ const introAudio = async () => {
       
     }
   };
+
+  useEffect(() => {
+
+    return () => {
+     console.log("Cleaning up on unmount, stopping Vapi and sending off command: ", isAssistantOnRef.current,"|| ", isAssistantOn);
+      if(isAssistantOnRef.current) {
+        console.log("Cleaning up on unmount, stopping Vapi and sending off command");
+        toggleAssistant(); // Ensure assistant is turned off}
+    }}
+  }, []);
+
   const toggleAssistant = async () => {
     // console.log("assistant status from ref: inside ", isAssistantOnRef.current);
 

@@ -1,5 +1,3 @@
-
-
 import { useEffect, useRef, useState } from 'react';
 
 const DEEPGRAM_API_KEY = '8db50845e951f4d27e920901a1b20468d51d5407';
@@ -68,7 +66,6 @@ export default function DeepgramFun() {
               } else {
                 setWarning('');
 
-                // ✅ Only send to iframe if confidence is high
                 if (speaker === 0) {
                   const iframe = document.querySelector('iframe');
                   const modifiedText = `Speaker 0: ${text}`;
@@ -96,28 +93,16 @@ export default function DeepgramFun() {
   }, []);
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>🎧 Deepgram Live Transcription</h1>
+    <div className="p-8 font-sans">
+      <h1 className="text-2xl font-bold mb-4">🎧 Deepgram Live Transcription</h1>
 
       {confidenceDisplay && (
-        <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#333' }}>
-          {confidenceDisplay}
-        </p>
+        <p className="text-lg font-semibold text-gray-800 mb-2">{confidenceDisplay}</p>
       )}
 
-      {warning && <p style={{ color: 'red', fontWeight: 'bold' }}>{warning}</p>}
+      {warning && <p className="text-red-600 font-bold mb-2">{warning}</p>}
 
-      <div
-        style={{
-          backgroundColor: '#f4f4f4',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          padding: '1rem',
-          height: '300px',
-          overflowY: 'scroll',
-          whiteSpace: 'pre-wrap',
-        }}
-      >
+      <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 h-[300px] overflow-y-scroll whitespace-pre-wrap">
         {transcripts.length === 0 ? (
           '🎙 Speak to see transcript...'
         ) : (
@@ -129,20 +114,16 @@ export default function DeepgramFun() {
       <audio ref={audioRef} src="/output.mp3" preload="auto" />
 
       {/* 🤖 Vapi Assistant Iframe */}
-      <h2 style={{ marginTop: '2rem' }}>🤖 Vapi Assistant</h2>
-      <iframe
-        src="/deepgram-vapi"
-        width="100%"
-        height="600px"
-        sandbox="allow-scripts allow-same-origin"
-        allow=""
-        style={{
-          border: '1px solid black',
-          borderRadius: '10px',
-          marginTop: '1rem',
-        }}
-        title="Vapi Assistant"
-      />
+      <h2 className="text-xl font-semibold mt-8">🤖 Vapi Assistant</h2>
+        <iframe
+          src="/deepgram-vapi"
+          width="100%"
+          height="600px"
+          sandbox="allow-scripts allow-same-origin"
+          allow=""
+          title="Vapi Assistant"
+          className="border border-black rounded-lg mt-4 w-full"
+        />
     </div>
   );
 }
