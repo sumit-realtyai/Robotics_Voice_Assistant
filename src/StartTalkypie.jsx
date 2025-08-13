@@ -22,6 +22,7 @@ export default function StartTalkypie() {
     const vapiPublicKey = localStorage.getItem('vapiPublicKey');
     const toyName = localStorage.getItem('toyName') || 'Talkypie';
     const prompt = localStorage.getItem('customPrompt') || '';
+    const selectedAssistant = localStorage.getItem('selectedAssistant') || 'vapi';
     
     // Check if required keys are available
     // if (!porcupineKey ) {
@@ -40,8 +41,14 @@ export default function StartTalkypie() {
       isFormSubmitted: true
     }).toString();
     
-    navigate(`/permissions?${queryParams}`);
-  };
+    if(selectedAssistant === "deepgram+vapi") {
+      navigate("/deepgram");
+    } else if(selectedAssistant === "livekit") {
+      navigate("/livekit");
+    } else {
+      navigate(`/permissions?${queryParams}`);
+    }
+    };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

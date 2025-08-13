@@ -14,6 +14,7 @@ const Settings = React.lazy(() => import("./Settings.jsx"));
 const PaymentPage = React.lazy(() => import("./components/PaymentPage.jsx"));
 const DeepgramFun = React.lazy(() => import("./deepgram.jsx"));
 const DeepGramVapi = React.lazy(() => import("./deepgram-vapi.jsx"));
+const LiveKitAssistant = React.lazy(() => import("./LivekitAssistant.jsx"));
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
                 <Route path="/payment" element={<PaymentPage />} />
                 <Route path="/deepgram" element={<DeepgramFun />} />
                 <Route path="/deepgram-vapi" element={<DeepGramVapi />} />
+                <Route path="/livekit" element={<LiveKitAssistant />} />
                 
               </Routes>
             </Suspense>

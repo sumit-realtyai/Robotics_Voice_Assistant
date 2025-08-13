@@ -11,6 +11,7 @@ const LandingPage = () => {
 const [touchEndX, setTouchEndX] = useState(null);
 
 
+
 useEffect(() => {
   const handleResize = () => {
     const width = window.innerWidth;
