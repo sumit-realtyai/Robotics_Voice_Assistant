@@ -189,6 +189,7 @@ const VoiceWidget = () => {
     }
 
     console.log("Creating assistant with parameters:");
+    console.log("vapi private key:", vapiPrivateKey);
 
     try {
       setIsCreatingAssistant(true);
