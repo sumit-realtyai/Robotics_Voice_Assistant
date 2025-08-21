@@ -52,6 +52,9 @@ const PermissionsCheck = () => {
     }
   };
 
+  // connect to ESP32 , its a BLE device
+  // currently we are using Blinker_1 as the device name pop will only show this device
+  // you can change the device name in the ESP32 code
   const connectToESP32 = async () => {
     try {
       setIsChecking(true);

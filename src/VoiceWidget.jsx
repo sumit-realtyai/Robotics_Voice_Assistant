@@ -177,6 +177,7 @@ const VoiceWidget = () => {
   };
 
   // Create assistant when component mounts
+  // step-1
   const createAssistant = async () => {
     if (!childName ) {
       console.log("Missing required parameters");
@@ -205,7 +206,7 @@ const VoiceWidget = () => {
         // https://api-talkypies.vercel.app
       // http://localhost:5000
         const response = await axios.post(
-        "https://api-talkypies.vercel.app/vapi/create-assistant",
+        "https://backend-robotics-voice-assistance.onrender.com/vapi/create-assistant",
         {
           childName,
           customPrompt,
@@ -255,6 +256,7 @@ const VoiceWidget = () => {
     }
   };
 
+  // step-2 start the assistant when created
   useEffect(() => {
     if (assistantId && assistantStatus === "created") {
       
@@ -304,6 +306,7 @@ const VoiceWidget = () => {
     }
   };
 
+  // step-8
   const sendOffCommand = async () => {
     try {
       if (!espCharacteristic) return;
@@ -348,7 +351,7 @@ const VoiceWidget = () => {
   // new setup for deepgram and wake word
 
 
-
+// useEffect to manage wake up audio
 useEffect(() => {
   if (
     !isFormSubmitted ||
@@ -378,7 +381,7 @@ useEffect(() => {
   audio.play().catch((e) => console.warn("Initial play failed:", e));
   wakeUpAudioRef.current = audio;
 
-  // Loop every 10s
+  // Loop every 10s until wake word is detected or assistant is turned on
   const intervalId = setInterval(() => {
     if (!wakeWordDetected && !isAssistantOnRef.current) {
       playAudio();
@@ -442,6 +445,7 @@ useEffect(() => {
   }
 };
 
+
   initializeDeepgram();
 
   // === Cleanup Both Audio & Deepgram ===
@@ -476,6 +480,7 @@ useEffect(() => {
     }
   }, [keywordDetection]);
 
+// step-4 
 const introAudio = async () => {
   console.log("Starting intro audio... before connecting tovapi");
   
@@ -486,6 +491,7 @@ const introAudio = async () => {
     wakeUpAudioRef.current.currentTime = 0; // Reset the audio to the beginning
   }
 
+  // step-5 
    const audio = new Audio("/connect.mp3");
       await audio.play();
       await new Promise((resolve) => {
@@ -494,11 +500,15 @@ const introAudio = async () => {
           resolve();
         };
       })
+
+      // step-6
       await sendBlinkCommand();
 
       let intervalId; 
       let repeatedAudio;
 
+
+      // Repeat the intro audio every 5 seconds until speech starts
       intervalId = setInterval(() => {
         repeatedAudio = new Audio(audio.src);
         repeatedAudio.play();
@@ -514,6 +524,8 @@ const introAudio = async () => {
         console.log("Eva connected. Stopped repeating audio.");
       });
 }
+
+// start listening for wake word and toggle assistant when detected
  useEffect(() => {
     if (
       (mediaDetection || wakeWordDetected) &&
@@ -524,7 +536,7 @@ const introAudio = async () => {
         console.log("Assistant is already on, no need to start again.");
         return;
       }
-
+      
       setIsLoading(true);
       // direct call toggleAssistant and inside it call introAudio fun
       toggleAssistant();
@@ -536,6 +548,8 @@ const introAudio = async () => {
     }
   }, [wakeWordDetected, isFormSubmitted, mediaDetection, assistantStatus]);
 
+
+  
   useEffect(() => {
     if (!isFormSubmitted) return;
 
@@ -570,6 +584,7 @@ const introAudio = async () => {
     };
   }, [isFormSubmitted]);
 
+  // step-6
   const startVapiAssistant = async () => {
     if (!assistantId) {
       console.error("No assistant ID available");
@@ -583,6 +598,8 @@ const introAudio = async () => {
       setIsLoading(false);
       setIsAssistantOn(true);
       isAssistantOnRef.current = true;
+
+      // when the assistant ended the call implicitly, we have to manually perform end call operations
       vapi.once("call-end", () => {
         console.log(
           "Call ended event received",
@@ -590,6 +607,7 @@ const introAudio = async () => {
           "  ",
           isAssistantOnRef.current
         );
+
         if (isAssistantOn || isAssistantOnRef.current) {
           // resetInactivityTimer();
           toggleAssistant(); // Call toggleAssistant to handle end call processing
@@ -600,6 +618,8 @@ const introAudio = async () => {
       setIsLoading(false);
     }
   };
+
+  // step-7
   const endCallProcessing = async () => {
     console.log("End call processing started..... before stopping Vapi");
     try {
@@ -612,6 +632,7 @@ const introAudio = async () => {
           resolve();
         };
       })
+
       await sendOffCommand();
     } catch (error) {
       console.error("Error processing end call:", error);
@@ -629,6 +650,7 @@ const introAudio = async () => {
     }}
   }, []);
 
+  // step-3 toggle assistant on/off
   const toggleAssistant = async () => {
     // console.log("assistant status from ref: inside ", isAssistantOnRef.current);
 
