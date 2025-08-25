@@ -31,7 +31,19 @@ export default function StartTalkypie() {
     //   return;
     // }
     
-    const queryParams = new URLSearchParams({
+    // const queryParams = new URLSearchParams({
+    //   ...formData,
+    //   porcupineKey,
+    //   vapiKey,
+    //   vapiPublicKey,
+    //   prompt,
+    //   toyName,
+    //   isFormSubmitted: true
+    // }).toString();
+
+    const queryParams = new URLSearchParams(
+  Object.fromEntries(
+    Object.entries({
       ...formData,
       porcupineKey,
       vapiKey,
@@ -39,7 +51,10 @@ export default function StartTalkypie() {
       prompt,
       toyName,
       isFormSubmitted: true
-    }).toString();
+    }).filter(([_, v]) => v != null) // remove null or undefined
+  )
+).toString();
+
     
     if(selectedAssistant === "deepgram+vapi") {
       navigate("/deepgram");

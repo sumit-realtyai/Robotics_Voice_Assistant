@@ -100,7 +100,23 @@ const PermissionsCheck = () => {
   };
 
   const proceedToVoiceWidget = () => {
-    const params = new URLSearchParams({
+    // const params = new URLSearchParams({
+    //   childName,
+    //   age,
+    //   gender,
+    //   interests,
+    //   currentLearning,
+    //   porcupineKey,
+    //   vapiKey,
+    //   vapiPublicKey,
+    //   isFormSubmitted: 'true',
+    //   prompt,
+    //   toyName,
+    // });
+
+    const params = new URLSearchParams(
+  Object.fromEntries(
+    Object.entries({
       childName,
       age,
       gender,
@@ -112,7 +128,10 @@ const PermissionsCheck = () => {
       isFormSubmitted: 'true',
       prompt,
       toyName,
-    });
+    }).filter(([_, v]) => v != null) // remove null or undefined
+  )
+).toString();
+
     
     navigate(`/vapi?${params.toString()}`);
   };

@@ -19,6 +19,7 @@ import { useESP32 } from "./contexts/ESP32Context";
 
 // will initialize Vapi instance once assistant is created
 let vapi;
+let introAudioIntervalID; 
 const VoiceWidget = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -73,8 +74,10 @@ const VoiceWidget = () => {
     queryParams.get("vapiKey") || localStorage.getItem("vapiKey") ;
   const vapiPublicKey =
     queryParams.get("vapiPublicKey") ||
-    localStorage.getItem("vapiPublicKey") ||
-    "57bd3c84-dd46-41ce-82ab-2bbe48163d90";
+    localStorage.getItem("vapiPublicKey") || "5ef0f426-330b-4bd9-883e-d99340f70087";
+    
+    
+    // "57bd3c84-dd46-41ce-82ab-2bbe48163d90";
   
 
   const {
@@ -222,6 +225,7 @@ const VoiceWidget = () => {
       const receivedFinalPrompt = response.data.finalPrompt;
 
       // Initialize VAPI with public key for client SDK
+   
       vapi = new Vapi(vapiPublicKey);
       setAssistantId(newAssistantId);
       setFinalPrompt(receivedFinalPrompt || "");
@@ -505,12 +509,12 @@ const introAudio = async () => {
       // step-6
       await sendBlinkCommand();
 
-      let intervalId; 
+      
       let repeatedAudio;
 
 
       // Repeat the intro audio every 5 seconds until speech starts
-      intervalId = setInterval(() => {
+      introAudioIntervalID = setInterval(() => {
         repeatedAudio = new Audio(audio.src);
         repeatedAudio.play();
         console.log("Playing intro audio...");
@@ -520,7 +524,7 @@ const introAudio = async () => {
         repeatedAudio.pause();
         console.log("speech-start called only once");
         console.log("Assistant has started speaking.");
-        clearInterval(intervalId);
+        clearInterval(introAudioIntervalID);
         sendOnCommand();
         console.log("Eva connected. Stopped repeating audio.");
       });
@@ -544,7 +548,7 @@ const introAudio = async () => {
 
 
       return () => {
-        // clearInterval(intervalId);
+        // clearInterval(introAudioIntervalID);
       };
     }
   }, [wakeWordDetected, isFormSubmitted, mediaDetection, assistantStatus]);
@@ -594,6 +598,7 @@ const introAudio = async () => {
 
     setIsLoading(true);
     try {
+
       const call = await vapi.start(assistantId);
       console.log("Call started:", call);
       setIsLoading(false);
@@ -617,6 +622,11 @@ const introAudio = async () => {
     } catch (error) {
       console.error("Error starting call:", error);
       setIsLoading(false);
+      clearInterval(introAudioIntervalID); // Stop repeating intro audio
+      setWakeWordDetected(false);
+      setMediaDetect(false);
+      // if vapi failed to start call, stop the intro audio interval and show a popup message
+      // to the user that failed to connect please try again. taost duration: 2sec.
     }
   };
 
