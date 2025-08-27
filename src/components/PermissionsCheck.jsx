@@ -25,6 +25,7 @@ const PermissionsCheck = () => {
   const vapiPublicKey = queryParams.get("vapiPublicKey") || localStorage.getItem('vapiPublicKey') || "";
   const prompt = queryParams.get("prompt") || "";
   const toyName = queryParams.get('toyName');
+  const customTranscript = queryParams.get('customTranscript') === 'true';
 
   // Update ESP32 status based on global state
   useEffect(() => {
@@ -128,6 +129,7 @@ const PermissionsCheck = () => {
       isFormSubmitted: 'true',
       prompt,
       toyName,
+      customTranscript
     }).filter(([_, v]) => v != null) // remove null or undefined
   )
 ).toString();

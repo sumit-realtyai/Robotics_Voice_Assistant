@@ -60,8 +60,10 @@ export default function StartTalkypie() {
       navigate("/deepgram");
     } else if(selectedAssistant === "livekit") {
       navigate("/livekit");
+    } else if (selectedAssistant === "vapi with custom transcript") {
+      navigate(`/permissions?${queryParams}&customTranscript=true`); 
     } else {
-      navigate(`/permissions?${queryParams}`);
+      navigate(`/permissions?${queryParams}&customTranscript=false`);
     }
     };
 

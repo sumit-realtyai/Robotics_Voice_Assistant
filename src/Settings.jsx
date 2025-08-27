@@ -281,10 +281,12 @@ const Settings = () => {
               className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700"
             >
               <option value="vapi">VAPI</option>
+              <option value="vapi with custom transcript">VAPI with Custom Transcript</option>
+              <option value="livekit">LiveKit</option>
               <option value="synthflow">Synthflow</option>
               <option value="voiceflow">Voiceflow</option>
               <option value="deepgram+vapi">deepgram+vapi</option>
-              <option value="livekit">LiveKit</option>
+              
             </select>
           </div>
 

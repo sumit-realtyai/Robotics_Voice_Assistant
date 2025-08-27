@@ -48,6 +48,8 @@ const VoiceWidget = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(
     queryParams.get("isFormSubmitted") === "true"
   );
+  const customTranscript = queryParams.get('customTranscript') === 'true';
+
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
   const [assistantId, setAssistantId] = useState(null);
   const [mediaDetection, setMediaDetect] = useState(false);
@@ -74,7 +76,7 @@ const VoiceWidget = () => {
     queryParams.get("vapiKey") || localStorage.getItem("vapiKey") ;
   const vapiPublicKey =
     queryParams.get("vapiPublicKey") ||
-    localStorage.getItem("vapiPublicKey") || "5ef0f426-330b-4bd9-883e-d99340f70087";
+    localStorage.getItem("vapiPublicKey") || "1f568b16-001f-4f1c-8f34-02a4aa1ea376";
     
     
     // "57bd3c84-dd46-41ce-82ab-2bbe48163d90";
@@ -209,7 +211,8 @@ const VoiceWidget = () => {
 
         // https://api-talkypies.vercel.app
       // http://localhost:5000
-        const response = await axios.post(
+      // https://backend-robotics-voice-assistance.onrender.com/vapi/create-assistant  
+      const response = await axios.post(
         "https://backend-robotics-voice-assistance.onrender.com/vapi/create-assistant",
         {
           childName,
@@ -217,6 +220,7 @@ const VoiceWidget = () => {
           vapiKey: vapiPrivateKey,
           prompt,
           toyName,
+          customTranscript
         }
       );
 
