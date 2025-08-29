@@ -13,7 +13,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
               <FaMicrophoneAlt className="text-2xl text-blue-600" />
-              <span className="text-xl font-bold text-gray-800">Talkypies</span>
+              <span className="text-xl font-bold text-gray-800">Talk</span>
             </Link>
           </div>
 
