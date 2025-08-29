@@ -5,17 +5,7 @@ import { MdDashboard, MdMonitor, MdSettings } from 'react-icons/md';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [testColor, setTestColor] = useState('#000000');
-  const randomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    console.log(color);
-    setTestColor(color);
-  return color;
-  }
+  
   
     return (
     <nav className="bg-white shadow-lg">
@@ -27,17 +17,6 @@ const Navbar = () => {
               <span className="text-xl font-bold text-gray-800">Talkypies</span>
             </Link>
           </div>
-          
-           {/* creating a testing button whose color set to random color on each color */}
-              <button 
-                onClick={randomColor}
-                style={{ backgroundColor: testColor }}
-                className={`  text-white px-3 py-2 rounded-md m-4`}
-                >
-                  testing
-              </button>
-
-
           
 
           {/* Desktop Navigation */}

@@ -20,6 +20,7 @@ import { useESP32 } from "./contexts/ESP32Context";
 // will initialize Vapi instance once assistant is created
 let vapi;
 let introAudioIntervalID; 
+let repeatedIntroAudio;
 const VoiceWidget = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -467,6 +468,8 @@ useEffect(() => {
       mediaRecorderRef.current.stop();
      }
   mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+
+
 };
 
 }, [
@@ -497,7 +500,7 @@ const introAudio = async () => {
   if(wakeUpAudioRef.current) {
     wakeUpAudioRef.current.pause(); // Pause any ongoing wake-up audio
     console.log("Paused wake-up audio before starting intro audio.");
-    wakeUpAudioRef.current.currentTime = 0; // Reset the audio to the beginning
+    // wakeUpAudioRef.current.currentTime = 0; // Reset the audio to the beginning
   }
 
   // step-5 
@@ -514,18 +517,19 @@ const introAudio = async () => {
       await sendBlinkCommand();
 
       
-      let repeatedAudio;
+      
 
 
       // Repeat the intro audio every 5 seconds until speech starts
       introAudioIntervalID = setInterval(() => {
-        repeatedAudio = new Audio(audio.src);
-        repeatedAudio.play();
+        repeatedIntroAudio = new Audio(audio.src);
+        repeatedIntroAudio.play();
         console.log("Playing intro audio...");
       }, 5000);
 
       vapi.once("speech-start", async () => {
-        repeatedAudio.pause();
+        
+        repeatedIntroAudio.pause();
         console.log("speech-start called only once");
         console.log("Assistant has started speaking.");
         clearInterval(introAudioIntervalID);
@@ -608,6 +612,11 @@ const introAudio = async () => {
       setIsLoading(false);
       setIsAssistantOn(true);
       isAssistantOnRef.current = true;
+      // stop repeating intro audio and clear intro audio interval
+      // clearInterval(introAudioIntervalID);
+      // if(repeatedIntroAudio) {
+      //   repeatedIntroAudio.pause(); // Pause any ongoing repeated intro audio
+      // }
 
       // when the assistant ended the call implicitly, we have to manually perform end call operations
       vapi.once("call-end", () => {
@@ -672,9 +681,10 @@ const introAudio = async () => {
     if (isAssistantOnRef.current) {
       setIsLoading(true);
       vapi.stop();
-       setIsAssistantOn(false);
-      isAssistantOnRef.current = false;
       await endCallProcessing();
+      setIsAssistantOn(false);
+      isAssistantOnRef.current = false;
+      
       console.log("call disconnected");
      
       setIsLoading(false);
