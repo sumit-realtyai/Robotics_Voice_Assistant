@@ -2,6 +2,8 @@ import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import { ESP32Provider } from "./contexts/ESP32Context";
+import { MicrophoneProvider } from "./contexts/MicrophoneContext";
+
 
 const LandingPage = React.lazy(() => import("./LandingPage.jsx"));
 const StartTalkypie = React.lazy(() => import("./StartTalkypie.jsx"));
@@ -20,6 +22,7 @@ const LiveKitAssistant = React.lazy(() => import("./LivekitAssistant.jsx"));
 function App() {
   return (
     <ESP32Provider>
+      <MicrophoneProvider>
       <Router>
         <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200">
           <Navbar />
@@ -44,6 +47,7 @@ function App() {
           </div>
         </div>
       </Router>
+      </MicrophoneProvider>
     </ESP32Provider>
   );
 }

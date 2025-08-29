@@ -16,13 +16,14 @@ import {
 // Corrected:
 import { MdWifiOff } from "react-icons/md"; // ✅ correct package
 import { useESP32 } from "./contexts/ESP32Context";
-
+import { useMicrophone } from "./contexts/MicrophoneContext";
 // will initialize Vapi instance once assistant is created
 let vapi;
 let introAudioIntervalID; 
 let repeatedIntroAudio;
 const VoiceWidget = () => {
   const location = useLocation();
+  const {stream} = useMicrophone();
   const queryParams = new URLSearchParams(location.search);
   const { espCharacteristic, isConnected, connectionLost, acknowledgeConnectionLoss } = useESP32();
 
@@ -68,6 +69,7 @@ const VoiceWidget = () => {
   const deepgramSocketRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const mediaStreamRef = useRef(null);
+  
 
   const DEEPGRAM_API_KEY = "2434d902a6a617075faae7044e92fca628228f9a";
 
@@ -418,7 +420,7 @@ useEffect(() => {
 
     socket.onopen = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaStreamRef.current = stream;
 
         const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
@@ -456,7 +458,7 @@ useEffect(() => {
 };
 
 
-  // initializeDeepgram();
+   initializeDeepgram();
 
   // === Cleanup Both Audio & Deepgram ===
    return () => {
@@ -464,11 +466,11 @@ useEffect(() => {
   audio.pause?.();
   clearInterval(intervalId);
 
-  // deepgramSocketRef.current?.close?.();
-  // if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
-  //     mediaRecorderRef.current.stop();
-  //    }
-  // mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+  deepgramSocketRef.current?.close?.();
+  if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+     }
+  mediaStreamRef.current?.getTracks().forEach(t => t.stop());
 
 
 };
@@ -608,7 +610,9 @@ const introAudio = async () => {
     setIsLoading(true);
     try {
 
-      const call = await vapi.start(assistantId);
+      const call = await vapi.start(assistantId,  {
+  audio: { input: stream }
+});
       console.log("Call started:", call);
       setIsLoading(false);
       setIsAssistantOn(true);
