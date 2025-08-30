@@ -615,11 +615,11 @@ const introAudio = async () => {
       setIsLoading(false);
       setIsAssistantOn(true);
       isAssistantOnRef.current = true;
-      // stop repeating intro audio and clear intro audio interval
-      // clearInterval(introAudioIntervalID);
-      // if(repeatedIntroAudio) {
-      //   repeatedIntroAudio.pause(); // Pause any ongoing repeated intro audio
-      // }
+    // stop repeating intro audio and clear intro audio interval
+      clearInterval(introAudioIntervalID);
+      if(repeatedIntroAudio) {
+        repeatedIntroAudio.pause(); // Pause any ongoing repeated intro audio
+      }
 
       // when the assistant ended the call implicitly, we have to manually perform end call operations
       vapi.once("call-end", () => {
