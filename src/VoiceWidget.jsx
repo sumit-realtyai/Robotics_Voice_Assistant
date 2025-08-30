@@ -610,9 +610,7 @@ const introAudio = async () => {
     setIsLoading(true);
     try {
 
-      const call = await vapi.start(assistantId,  {
-  audio: { input: stream }
-});
+      const call = await vapi.start(assistantId);
       console.log("Call started:", call);
       setIsLoading(false);
       setIsAssistantOn(true);
