@@ -408,6 +408,7 @@ useEffect(() => {
     //   }
     // mediaStreamRef.current?.getTracks().forEach(t => t.stop());
 
+  
     // Create WebSocket
     const socket = new WebSocket(
       `wss://api.deepgram.com/v1/listen?punctuate=true&language=en`,
@@ -455,18 +456,19 @@ useEffect(() => {
 };
 
 
-  initializeDeepgram();
+  // initializeDeepgram();
 
   // === Cleanup Both Audio & Deepgram ===
    return () => {
   console.log("🧹 Cleanup Deepgram + Audio");
   audio.pause?.();
   clearInterval(intervalId);
-  deepgramSocketRef.current?.close?.();
-  if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
-      mediaRecorderRef.current.stop();
-     }
-  mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+
+  // deepgramSocketRef.current?.close?.();
+  // if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
+  //     mediaRecorderRef.current.stop();
+  //    }
+  // mediaStreamRef.current?.getTracks().forEach(t => t.stop());
 };
 
 }, [
