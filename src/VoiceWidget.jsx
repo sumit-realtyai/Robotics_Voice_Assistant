@@ -456,7 +456,7 @@ useEffect(() => {
 };
 
 
-  // initializeDeepgram();
+  initializeDeepgram();
 
   // === Cleanup Both Audio & Deepgram ===
    return () => {
@@ -464,11 +464,11 @@ useEffect(() => {
   audio.pause?.();
   clearInterval(intervalId);
 
-  // deepgramSocketRef.current?.close?.();
-  // if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
-  //     mediaRecorderRef.current.stop();
-  //    }
-  // mediaStreamRef.current?.getTracks().forEach(t => t.stop());
+  deepgramSocketRef.current?.close?.();
+  if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+     }
+  mediaStreamRef.current?.getTracks().forEach(t => t.stop());
 };
 
 }, [
