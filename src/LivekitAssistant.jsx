@@ -54,7 +54,7 @@ const LiveKitAssistant = () => {
         }}
       >
         <iframe
-          src="https://sam-rt-av-realty-ai-live-kit-voice-ebon.vercel.app/"
+          src="https://livekit-vercel-delta.vercel.app/"
           style={{
             width: "100%",
             height: "100%",
