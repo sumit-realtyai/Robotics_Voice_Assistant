@@ -609,7 +609,18 @@ const introAudio = async () => {
       setIsAssistantOn(true);
       isAssistantOnRef.current = true;
 
-      // when the assistant ended the call implicitly, we have to manually perform end call operations
+      // For listening assistants talking and listning states
+
+      vapi.on("speech-start", () => {
+      sendOnCommand();
+      });
+
+      vapi.on("speech-end", () => {
+      sendBlinkCommand();
+     });
+
+
+       // when the assistant ended the call implicitly, we have to manually perform end call operations
       vapi.once("call-end", () => {
         console.log(
           "Call ended event received",
