@@ -193,8 +193,6 @@ const VoiceWidget = () => {
       return;
     }
 
-    console.log("Creating assistant with parameters:");
-    console.log("vapi private key:", vapiPrivateKey);
 
     try {
       setIsCreatingAssistant(true);
@@ -211,9 +209,9 @@ const VoiceWidget = () => {
 
         // https://api-talkypies.vercel.app
       // http://localhost:5000
-      // https://backend-robotics-voice-assistance.onrender.com/vapi/create-assistant  
+      // https://https://talkypie-vapi-backend.onrender.com/vapi/create-assistant  
       const response = await axios.post(
-        "https://backend-robotics-voice-assistance.onrender.com/vapi/create-assistant",
+        "https://talkypie-vapi-backend.onrender.com/vapi/create-assistant",
         {
           childName,
           customPrompt,

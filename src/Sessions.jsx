@@ -8,7 +8,7 @@ export default function SessionsPage() {
   useEffect(() => {
     async function fetchSessions() {
       try {
-        const res = await fetch("https://backend-robotics-voice-assistance.onrender.com/vapi/sessions"); // Replace with your API URL
+        const res = await fetch("https://talkypie-vapi-backend.onrender.com/vapi/sessions"); // Replace with your API URL
         const data = await res.json();
         setSessions(data.callData);
         setTotals({
